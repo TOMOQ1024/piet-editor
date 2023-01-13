@@ -11,7 +11,8 @@ const controlIcons: IconDefinition[] = [
 ]
 
 function Control(props:{icon:IconDefinition,tag:number,selectedTag:number,onClick:Function}){
-    let radio = (
+    return (
+        <div style={{display:"inline-block"}}>
         <input
         id={`control_${props.tag}`}
         className="control-radio"
@@ -21,10 +22,6 @@ function Control(props:{icon:IconDefinition,tag:number,selectedTag:number,onClic
         style={{display:"none"}}
         defaultChecked={props.tag===0}
         />
-    );
-    return (
-        <div style={{display:"inline-block"}}>
-        {radio}
         <label htmlFor={`control_${props.tag}`}>
         <FontAwesomeIcon
         className="control"
