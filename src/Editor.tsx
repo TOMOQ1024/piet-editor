@@ -2,62 +2,58 @@ import './App.css';
 import Controls from './Controls';
 import ColorPallet from './ColorPallet';
 import CanvasWrapper from './CanvasWrapper';
+import Interpreter from './Interpreter';
 import { useEffect, useState } from 'react';
+import { Env, Point } from './Utils';
 
-function CopyCode(c: string[][]){
-  const rtnCode: string[][] = [];
-  for(let y=0; y<c.length; y++){
-    rtnCode.push([]);
-    rtnCode[y] = c[y].slice(0);
-  }
-  return rtnCode;
-}
 
-export default function Editor() {
-  const [size, setSize] = useState({
-    width: 10,
-    height: 10
-  });
-  const [selectedColor, setSelectedColor] = useState('#ffc0c0');
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  let initCode: string[][] = [];
-  for(let y=0; y<size.height; y++){
-    initCode.push([]);
-    for(let x=0; x<size.width; x++){
-      initCode[y].push('#ffffff');
+
+export default function Editor(
+  props: {
+    code: number[][],
+    size: {
+      w: number,
+      h: number,
     }
   }
-  const [code, setCode] = useState(initCode);
-  const [crntPos, setCrntPos] = useState({x:0,y:0});
-  const [nextPos, setNextPos] = useState({x:-1,y:-1});
-
-  function SetCodel(x: number, y: number){
-    if(x < 0 || y < 0 || size.width <= x || size.height <= y)return;
-    setSelectedColor(c=>{
-    if(code[y][x] !== c){
-        const newCode = [...code];
-        newCode[y][x] = c;
-        setCode(newCode);
-      }
-      return c;
-    });
-  }
+) {
+  console.log('%ceditor component rendered', 'color:#0000ff');
+  const [env, setEnv] = useState<Env>(
+    {
+      crnt: {x:0,y:0},
+      next: {x:-1,y:-1},
+      size: props.size,
+      code: props.code,
+      dp: 0,
+      cc: 0,
+      block: [],
+      stuck: 0,
+      stack: [],
+      input: '',
+      output: '',
+      fillColor0: 0,
+    }
+  );
 
   return (
     <div className="Editor">
       <Controls/>
       <div className='wrapper-main'>
-      <ColorPallet
-      setSelectedColor={setSelectedColor}
-      />
-      <CanvasWrapper
-      size={size}
-      code={code}
-      SetCodel={SetCodel}
-      />
+        <ColorPallet
+        env={env}
+        setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
+        />
+        <div className='wrapper-mid'>
+          <CanvasWrapper
+          env={env}
+          setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
+          />
+          <Interpreter
+          env={env}
+          setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
+          />
+        </div>
       </div>
-      
     </div>
   );
 }
