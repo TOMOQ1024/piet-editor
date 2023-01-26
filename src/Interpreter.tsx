@@ -1,6 +1,6 @@
 import { Key, useEffect, useState } from 'react';
 import DebugButton from './DebugButton';
-import { Colors, Env, isInCanvas, Point } from './Utils';
+import { Colors, Env, isInCanvas, Point, Size } from './Utils';
 import './App.css';
 
 interface Buttons {
@@ -13,7 +13,6 @@ export default function Interpreter(
     setEnv: (f: (e: Env) => Env) => void;
   }
 ) {
-  console.log(`%cinterpreter component rendered`, 'color:#00ff00');
   const buttons: Buttons = {
     reset: reset,
     run: run,
@@ -84,7 +83,7 @@ export default function Interpreter(
 
 // Env.nextを設定する
 function getNextCodel(e: Env): Env {
-  e = getColorBlock(e);
+  e.block = getColorBlock(e.crnt, e.size, e.code, true);
   let ec: Point;
   const black = Colors.indexOf('#000000');
   let d: Point;
@@ -98,7 +97,7 @@ function getNextCodel(e: Env): Env {
     ][e.dp % 4];
     e.crnt = ec = getEdgeCodel(e);
     console.log(ec.x + d.x, ec.y + d.y);
-    if (isInCanvas(e, ec.x + d.x, ec.y + d.y) && e.code[ec.y + d.y][ec.x + d.x] !== black) {
+    if (isInCanvas(e.size, ec.x + d.x, ec.y + d.y) && e.code[ec.y + d.y][ec.x + d.x] !== black) {
       e.next = {
         x: ec.x + d.x,
         y: ec.y + d.y,
@@ -218,47 +217,53 @@ function getEdgeCodel(e: Env): Point {
   return rtn;
 }
 
-function getColorBlock(e: Env): Env {
-  console.log(`crnt: ${e.crnt.x},${e.crnt.y}`);
-  let newBlock: Point[] = [e.crnt];
-  let search: Point[] = [e.crnt];
-  const col = e.code[e.crnt.y][e.crnt.x];
+export function getColorBlock(from: Point, size: Size, code: number[][], separateWhite: boolean): Point[] {
+  console.log(`crnt: ${from.x},${from.y}`);
+  let newBlock: Point[] = [];
+  let search: Point[] = [from];
 
-  if (Colors[col] === '#ffffff') {
-    e.block = [e.crnt];
-    return e;
+  const col = code[from.y][from.x];
+  if (separateWhite && Colors[col] === '#ffffff') {
+    return [from];
   }
-  let searched: boolean[][] = [];
-  for (let y = 0; y < e.size.h; y++) {
-    searched.push([]);
-    for (let x = 0; x < e.size.w; x++) {
-      searched[y].push(false);
+  let buf: number[][] = [];
+  for (let y = 0; y < size.h; y++) {
+    buf.push([]);
+    for (let x = 0; x < size.w; x++) {
+      buf[y].push(code[y][x]);
     }
   }
-  searched[e.crnt.y][e.crnt.x] = true;
-  let s: Point;
+  let s0: Point, s: Point;
   const d = [
     { x: 1, y: 0 },
     { x: 0, y: 1 },
     { x: -1, y: 0 },
     { x: 0, y: -1 },
   ];
-  while (0 < search.length) {
-    s = search.shift() || { x: 0, y: 0 };
+
+  function fill(p: Point){
+    buf[p.y][p.x] = -1;
     d.forEach(d0 => {
+      s = {x:p.x+d0.x, y:p.y+d0.y};
       // 進めるコーデルか
-      if (isInCanvas(e, s.x + d0.x, s.y + d0.y)) {
+      if (isInCanvas(size, s.x, s.y)) {
         // 同じ色のコーデルか
-        if (e.code[s.y + d0.y][s.x + d0.x] === col) {
-          // 探索済みか
-          if (!searched[s.y + d0.y][s.x + d0.x]) {
-            newBlock.push({ x: s.x + d0.x, y: s.y + d0.y });
-            search.push({ x: s.x + d0.x, y: s.y + d0.y });
-          }
+        if (buf[s.y][s.x] === col) {
+          fill(s);
         }
-        searched[s.y + d0.y][s.x + d0.y] = true;
       }
     });
   }
-  return { ...e, block: newBlock };
+
+  fill(from);
+  for (let y = 0; y < size.h; y++) {
+    for (let x = 0; x < size.w; x++) {
+      buf[y].push(code[y][x]);
+      if(buf[y][x] < 0){
+        newBlock.push({x:x, y:y});
+      }
+    }
+  }
+  // console.log(newBlock);
+  return newBlock;
 }

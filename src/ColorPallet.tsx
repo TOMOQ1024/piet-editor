@@ -8,8 +8,6 @@ export default function ColorPallet(
     setEnv: (f:(e:Env)=>Env)=>void;
   }
 ) {
-  console.log('%ccolorpallet component rendered', 'color:#ffff00');
-
   function HandleRadioLClick(i: number) {
     setEnv(e=>({...e, fillColor0:i}));
   }

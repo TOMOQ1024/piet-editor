@@ -22,12 +22,30 @@ export default function CanvasWrapper(
       console.log("cvs is null");
       return;
     }
-    cvs?.dispatchEvent(new CustomEvent('setcodel', {
-      detail: {
-        x: x - Number(cvs.style.left.replace(/[a-z]/g, "")),
-        y: y - Number(cvs.style.top.replace(/[a-z]/g, "")),
-      }
-    }));
+    
+    let eventName: string;
+    console.log(env.ctrl);
+    switch(env.ctrl){
+      case 'move':
+        // cvsへはイベントを起こさない
+        break;
+      case 'draw':
+        cvs?.dispatchEvent(new CustomEvent('setcodel', {
+          detail: {
+            x: x - Number(cvs.style.left.replace(/[a-z]/g, "")),
+            y: y - Number(cvs.style.top.replace(/[a-z]/g, "")),
+          }
+        }));
+        break;
+      case 'fill':
+        cvs?.dispatchEvent(new CustomEvent('fillcodel', {
+          detail: {
+            x: x - Number(cvs.style.left.replace(/[a-z]/g, "")),
+            y: y - Number(cvs.style.top.replace(/[a-z]/g, "")),
+          }
+        }));
+        break;
+    }
   }
 
   function HandleContextMenu(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {

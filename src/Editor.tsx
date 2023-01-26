@@ -17,7 +17,6 @@ export default function Editor(
     }
   }
 ) {
-  console.log('%ceditor component rendered', 'color:#0000ff');
   const [env, setEnv] = useState<Env>(
     {
       crnt: {x:0,y:0},
@@ -32,12 +31,16 @@ export default function Editor(
       input: '',
       output: '',
       fillColor0: 0,
+      ctrl: 'draw'
     }
   );
 
   return (
     <div className="Editor">
-      <Controls/>
+      <Controls
+      env={env}
+      setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
+      />
       <div className='wrapper-main'>
         <ColorPallet
         env={env}

@@ -10,6 +10,13 @@ export interface Size {
   h: number;
 }
 
+export const ctrls = [
+  'move',
+  'draw',
+  'fill',
+] as const;
+export type Ctrl = typeof ctrls[number];
+
 export interface Env {
   crnt: Point,
   next: Point,
@@ -23,14 +30,15 @@ export interface Env {
   input: '',
   output: '',
   fillColor0: number,
+  ctrl: Ctrl,
 }
 
 export function isInCanvas(
-  e: Env,
+  s: Size,
   x: number,
   y: number
 ): boolean {
-  return 0 <= x && 0 <= y && x < e.size.w && y < e.size.h;
+  return 0 <= x && 0 <= y && x < s.w && y < s.h;
 }
 
 export const Colors = [
