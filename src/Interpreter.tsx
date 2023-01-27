@@ -117,9 +117,9 @@ function getEdgeCodel(e: Env): Point {
   const block = e.block;
   let edge: Point[] = [];
   let bound: number;
-  console.log(`dp:${e.dp}, cc:${e.cc}`);
-  console.log('block: ');
-  console.log(block);
+  // console.log(`dp:${e.dp}, cc:${e.cc}`);
+  // console.log('block: ');
+  // console.log(block);
   switch (e.dp % 4) {
     case 0:// 右
       bound = -1;
@@ -170,8 +170,8 @@ function getEdgeCodel(e: Env): Point {
       }
       break;
   }
-  console.log('edge: ');
-  console.log(edge);
+  // console.log('edge: ');
+  // console.log(edge);
   const d = e.dp + (e.cc % 2 === 0 ? -1 : 1);
   let rtn = { x: -1, y: -1 };
   switch ((d % 4 + 4) % 4) {
@@ -212,8 +212,8 @@ function getEdgeCodel(e: Env): Point {
       }
       break;
   }
-  console.log('return: ');
-  console.log(rtn);
+  // console.log('return: ');
+  // console.log(rtn);
   return rtn;
 }
 
@@ -264,6 +264,5 @@ export function getColorBlock(from: Point, size: Size, code: number[][], separat
       }
     }
   }
-  // console.log(newBlock);
   return newBlock;
 }
