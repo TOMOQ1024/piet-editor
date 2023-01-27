@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faArrowPointer, faPen, faFillDrip } from "@fortawesome/free-solid-svg-icons";
@@ -11,11 +11,11 @@ const controlIcons: IconDefinition[] = [
   faFillDrip,
 ]
 
-function Control(props: { icon: IconDefinition, tag: number, selectedTag: number, onClick: Function }) {
+function Control(props: { icon: IconDefinition, tag: number, selectedTag: number }) {
   return (
     <div style={{ display: "inline-block" }}>
       <input
-        id={`control_${props.tag}`}
+        id={`ctrl-rd-${props.tag}`}
         className="control-radio"
         type="radio"
         name="controls"
@@ -23,11 +23,11 @@ function Control(props: { icon: IconDefinition, tag: number, selectedTag: number
         style={{ display: "none" }}
         defaultChecked={props.tag === props.selectedTag}
       />
-      <label htmlFor={`control_${props.tag}`}>
+      <label htmlFor={`ctrl-rd-${props.tag}`}>
         <FontAwesomeIcon
+          id={`control_${props.tag}`}
           className="control"
           icon={props.icon}
-          onClick={()=>props.onClick()}
         />
       </label>
     </div>
@@ -40,8 +40,22 @@ export default function Controls(
     setEnv: (f: (e: Env) => Env) => void;
   }
 ) {
-  function OnControlClicked(tag: number) {
-    setEnv(e=>({...e, ctrl: ctrls[tag]}));
+  useEffect(()=>{
+    controlIcons.forEach((v, i)=>{
+      const c = document.getElementById(`control_${i}`);
+      if(c !== null){
+        c.addEventListener('click', OnControlClicked);
+        return ()=>{
+          c.removeEventListener('click', OnControlClicked);
+        }
+      }
+    });
+  }, []);
+
+  function OnControlClicked(e:MouseEvent) {
+    if (e.target === null) return;
+    const i = Number((e.target as HTMLDivElement).id.replace(/[^\d]/g,''));
+    setEnv(e=>({...e, ctrl: ctrls[i]}));
   }
 
   return (
@@ -51,7 +65,6 @@ export default function Controls(
         tag={i}
         icon={v}
         selectedTag={ctrls.indexOf(env.ctrl)}
-        onClick={() => OnControlClicked(i)}
       />
     )}</div>
   )

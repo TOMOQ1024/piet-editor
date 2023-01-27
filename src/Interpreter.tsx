@@ -35,15 +35,7 @@ export default function Interpreter(
   }
 
   function step() {
-    // console.log('step');
-    // setEnv(e=>{
-    //     return Object.assign({}, e);
-    // })
-    // return;
     let e = Object.assign({}, env);
-    // console.log('step enter');
-    // console.log(...Object.values(e.crnt));
-    // console.log(...Object.values(e.next));
     if (e.next.x === -1) {
       // 開始
       e = getNextCodel(e);
@@ -53,14 +45,8 @@ export default function Interpreter(
       return e;
     }
     e.crnt = Object.assign({}, e.next);
-    // console.log('----');
     e = getNextCodel(e);
-    // console.log('step leave');
-    // console.log(...Object.values(e.crnt));
-    // console.log(...Object.values(e.next));
-    //props.setEnv(Object.assign({}, e));
     setEnv(_ => e);
-    console.log('%cENV SET', 'color:#ff0000;font-size:200%;');
   }
 
   function stop() {
@@ -96,7 +82,6 @@ function getNextCodel(e: Env): Env {
       { x: 0, y: -1 },
     ][e.dp % 4];
     e.crnt = ec = getEdgeCodel(e);
-    console.log(ec.x + d.x, ec.y + d.y);
     if (isInCanvas(e.size, ec.x + d.x, ec.y + d.y) && e.code[ec.y + d.y][ec.x + d.x] !== black) {
       e.next = {
         x: ec.x + d.x,

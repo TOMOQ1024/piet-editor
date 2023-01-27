@@ -7,10 +7,9 @@ const codelScale = 20;
 let first = true;
 
 export default function Canvas(
-  { env, setEnv, style }: {
+  { env, setEnv }: {
     env: Env;
     setEnv: (f: (e: Env) => Env) => void;
-    style: React.CSSProperties
   }
 ) {
   useEffect(() => {
@@ -108,12 +107,10 @@ export default function Canvas(
   }
 
   return (
-    <canvas
-      id="canvas"
-      width={env.size.w * 20 + 1}
-      height={env.size.h * 20 + 1}
-      style={style}
-    // onClick={e=>HandleClick(e)}
-    />
+      <canvas
+        id="canvas"
+        width={env.size.w * 20 + 1}
+        height={env.size.h * 20 + 1}
+      />
   )
 }

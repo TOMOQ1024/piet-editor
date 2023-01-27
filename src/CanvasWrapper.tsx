@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import Canvas from './Canvas';
-import { Env, Point } from './Utils';
+import CanvasDiv from './CanvasDiv';
+import { Env, isInCanvas, Point, Size } from './Utils';
 
 // メインのキャンバスの移動やサイズ制御を行う
 export default function CanvasWrapper(
@@ -13,73 +14,125 @@ export default function CanvasWrapper(
   const [MouseDownPos, setMouseDownPos] = useState<Point>({x:0,y:0});
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState<Point>({x:0, y:0});
+  const [translateOnMouseDown, setTranslateOnMouseDown] = useState<Point>({x:0, y:0});
 
   useEffect(()=>{
-    const self = document.getElementById('CanvasWrapper');
-    if(self === null){
-      console.log('%cself is null', 'color:#c00000');
-      return;
-    }
-    self.addEventListener('wheel', HandleWheel, {passive:false});
+    // 各イベントの追加
+    document.addEventListener('wheel', HandleWheel, {passive: false});
+    document.addEventListener('mousedown', HandleMouseDown, {passive: false});
+    document.addEventListener('mousemove', HandleMouseMove, {passive: false});
+    document.addEventListener('contextmenu', HandleContextMenu, {passive: false});
     return (() => {
-      self.removeEventListener('wheel', HandleWheel);
-    });
-  }, []);
+      document.removeEventListener('wheel', HandleWheel);
+      document.removeEventListener('mousedown', HandleMouseDown);
+      document.removeEventListener('mousemove', HandleMouseMove);
+      document.removeEventListener('contextmenu', HandleContextMenu);
+  });
+  }, [env, MouseDownPos, scale, translate, translateOnMouseDown]);
 
-  function HandleMouseDown(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    if(env.ctrl === 'move'){
-      const self = document.getElementById('CanvasWrapper');
-      const cvs = document.getElementById('canvas');
-      if (self === null || cvs === null) return;
-      setMouseDownPos({
-        x: e.clientX - self.getBoundingClientRect().x - 2 - Number(cvs.style.translate.replace(/px/g, "").split(' ')[0]),
-        y: e.clientY - self.getBoundingClientRect().y - 2 - Number(cvs.style.translate.replace(/px/g, "").split(' ')[1]),
-      })
-    }else{
+  function HandleMouseDown(e: MouseEvent) {
+    const self = document.getElementById('CanvasWrapper');
+    const cdiv = document.getElementById('canvasdiv');
+    if (self === null || cdiv === null) return;
+    const s:Size = {
+      w: self.getBoundingClientRect().width,
+      h: self.getBoundingClientRect().height,
+    };
+    const X0 = e.clientX;
+    const Y0 = e.clientY;
+    const X = X0 - self.getBoundingClientRect().left - 2;
+    const Y = Y0 - self.getBoundingClientRect().top - 2;
+    setMouseDownPos({
+      x: X0,
+      y: Y0,
+    });
+    setTranslateOnMouseDown(t=>({
+      x: translate.x,
+      y: translate.y
+    }));
+    if(!isInCanvas(s, X, Y))return;
+    if(env.ctrl !== 'move'){
       HandleMouseMove(e);
     }
   }
 
-  function HandleMouseMove(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  function HandleMouseMove(e: MouseEvent) {
     if (!(e.buttons & 0b1 || e.buttons & 0b10)) return;
-    const cvs = document.getElementById('canvas');
     const self = document.getElementById('CanvasWrapper');
-    if (self === null) return;
-    const X = e.clientX - self.getBoundingClientRect().x - 2;
-    const Y = e.clientY - self.getBoundingClientRect().y - 2;
-    
-    if (cvs === null) {
-      console.log("cvs is null");
-      return;
+    const cdiv = document.getElementById('canvasdiv');
+    const cvs = document.getElementById('canvas');
+    if (self === null || cvs === null || cdiv === null) return;
+    const s:Size = {
+      w: self.getBoundingClientRect().width,
+      h: self.getBoundingClientRect().height,
+    };
+    const m:Point = {
+      x: e.clientX - self.getBoundingClientRect().x - 2,
+      y: e.clientY - self.getBoundingClientRect().y - 2,
     }
+    const d:Point = {
+      x: MouseDownPos.x - self.getBoundingClientRect().x - 2,
+      y: MouseDownPos.y - self.getBoundingClientRect().y - 2,
+    }
+    const x = (m.x - translate.x) / scale;
+    const y = (m.y - translate.y) / scale;
+    const downOutside = !isInCanvas(s, d.x, d.y);
+    const moveOutside = !isInCanvas(s, m.x, m.y);
     
-    const x = X - Number(cvs.style.left.replace(/[a-z]/g, ""));
-    const y = Y - Number(cvs.style.top.replace(/[a-z]/g, ""));
-    
+    // cdiv.dispatchEvent(new CustomEvent('mm', {detail: {x:X,y:y}}));
+
     switch(env.ctrl){
       case 'move':
-        // cvsへはイベントを起こさない
+        if(downOutside&&moveOutside)return;
         const delta: Point = {
-          x: X - MouseDownPos.x,
-          y: Y - MouseDownPos.y,
+          x: e.clientX - MouseDownPos.x,
+          y: e.clientY - MouseDownPos.y,
         };
-        cvs.style.left = `${X - MouseDownPos.x}px`;
-        cvs.style.top = `${Y - MouseDownPos.y}px`;
+        setTranslate(t=>({
+          x: translateOnMouseDown.x + delta.x,
+          y: translateOnMouseDown.y + delta.y,
+        }))
         break;
       case 'draw':
+        if(moveOutside)return;
         cvs?.dispatchEvent(new CustomEvent('setcodel', {detail: {x:x, y:y}}));
         break;
       case 'fill':
-        cvs?.dispatchEvent(new CustomEvent('fillcodel', {detail: {x:X, y:y}}));
+        if(moveOutside)return;
+        cvs?.dispatchEvent(new CustomEvent('fillcodel', {detail: {x:x, y:y}}));
         break;
     }
   }
 
   function HandleWheel(e: WheelEvent) {
     e.preventDefault();
+    // Wrapper外の場合無視
+    const self = document.getElementById('CanvasWrapper');
+    if(self === null)return;
+    const s:Size = {
+      w: self.getBoundingClientRect().width,
+      h: self.getBoundingClientRect().height,
+    };
+    const d:Point = {
+      x: e.clientX - self.getBoundingClientRect().x - 2,
+      y: e.clientY - self.getBoundingClientRect().y - 2,
+    }
+    if(!isInCanvas(s, d.x, d.y))return;
     if(e.ctrlKey){
-      // ズーム
-      setScale(s=>s*(e.shiftKey ? .999 : .99) ** e.deltaY);
+      // ズーム(canvas上のマウス位置が変わらないようにズームする)
+      const isPinch = !!(e.deltaY % 1);
+      const a = (e.shiftKey ? .999 : .99)**(e.deltaY * (isPinch ? 1 : .1));// scale変更の係数
+      const self = document.getElementById('CanvasWrapper');
+      if(self === null)return;
+      const p:Point = {
+        x: e.clientX - self.getBoundingClientRect().x - 2,
+        y: e.clientY - self.getBoundingClientRect().y - 2,
+      }
+      setTranslate(t=>({
+        x:p.x-(p.x-t.x)*a,
+        y:p.y-(p.y-t.y)*a,
+      }));
+      setScale(s=>a*s);
     }
     else if(e.shiftKey){
       // 横方向移動
@@ -97,23 +150,21 @@ export default function CanvasWrapper(
     }
   }
 
-  function HandleContextMenu(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  function HandleContextMenu(e: MouseEvent) {
     e.preventDefault();
   }
 
   return (
     <div
       id='CanvasWrapper'
-      onMouseDown={e => HandleMouseDown(e)}
-      onMouseMove={e => HandleMouseMove(e)}
-      onContextMenu={e => HandleContextMenu(e)}
     >
-      <Canvas
+      <CanvasDiv
         env={env}
         setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
         style={{
           scale: `${scale}`,
-          translate: `${translate.x}px ${translate.y}px`,
+          left: `${translate.x}px`,
+          top: `${translate.y}px`,
         }}
       />
     </div>

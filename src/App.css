@@ -25,6 +25,10 @@
   filter: brightness(0.8) invert(0);
 }
 
+.control * {
+  pointer-events: none;
+}
+
 .control-radio:checked + label .control {
   filter: brightness(0.8) invert(1);
 }
@@ -68,10 +72,27 @@
   position: relative;
 }
 
-#CanvasWrapper canvas {
+#canvasdiv {
   box-shadow: black 0 0 10px;
   position: absolute;
+  width: 201px;
+  height: 201px;
+  transform-origin: 0 0;
+  left: 0;
+  top: 0;
+  display: inline-block;
   pointer-events: none;
+}
+
+.resize-button-wrapper {
+  position: absolute;
+  font-size: xx-large;
+}
+
+#canvas {
+  width: 100%;
+  height: 100%;
+  z-index: 10;
 }
 
 .Interpreter {
