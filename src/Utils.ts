@@ -26,9 +26,11 @@ export interface Env {
   cc: number,
   block: Point[],
   stuck: number,
-  stack: [],
+  halted: boolean,
+  stack: number[],
   input: '',
   output: '',
+  baseColor: number,
   fillColor0: number,
   ctrl: Ctrl,
 }

@@ -1,6 +1,6 @@
 import { Key, useEffect, useState } from 'react';
 import DebugButton from './DebugButton';
-import { Colors, Env, isInCanvas, Point, Size } from './Utils';
+import { Colors, Env, isInCanvas, Operations, Point, Size } from './Utils';
 import './App.css';
 
 interface Buttons {
@@ -20,37 +20,46 @@ export default function Interpreter(
     stop: stop,
   }
 
-  function reset() {
-    setEnv(e => ({
-      ...e,
+  function reset(): Env{
+    return {
+      ...env,
       crnt: { x: 0, y: 0 },
       next: { x: -1, y: -1 },
+      stuck: 0,
+      halted: false,
+      stack: [],
       dp: 0,
       cc: 0,
-    }));
+    };
   }
 
-  function run() {
-    console.log('-run-');
+  function run(): Env{
+    let e = env;
+    for(let i=0; i<100 && !e.halted; i++){
+      e = step();
+    }
+    return step();
   }
 
-  function step() {
-    let e = Object.assign({}, env);
+  function step(e:Env = env): Env{
     if (e.next.x === -1) {
       // 開始
       e = getNextCodel(e);
     }
     else if (e.next.x === -2) {
-      console.log('halted');
+      // 終了
       return e;
     }
+    
+    e = updateStack(e);
     e.crnt = Object.assign({}, e.next);
     e = getNextCodel(e);
-    setEnv(_ => e);
+    return Object.assign({}, e);
   }
 
-  function stop() {
+  function stop(): Env{
     console.log('-stop-');
+    return env;
   }
 
   return (
@@ -59,7 +68,7 @@ export default function Interpreter(
         <DebugButton
           key={name}
           name={name}
-          func={() => buttons[name]()}
+    func={() => {let e = buttons[name](); setEnv(_ => e);}}
         />
       ))}
     </div>
@@ -95,9 +104,10 @@ function getNextCodel(e: Env): Env {
       ++e.stuck;
     }
   }
-  return { ...e, next: { x: -2, y: -2 } };
+  return { ...e, next: { x: -2, y: -2 }, halted: true };
 }
 
+// カラーブロッック端のコーデル取得
 function getEdgeCodel(e: Env): Point {
   const block = e.block;
   let edge: Point[] = [];
@@ -202,10 +212,9 @@ function getEdgeCodel(e: Env): Point {
   return rtn;
 }
 
+// カラーブロックの取得
 export function getColorBlock(from: Point, size: Size, code: number[][], separateWhite: boolean): Point[] {
-  console.log(`crnt: ${from.x},${from.y}`);
   let newBlock: Point[] = [];
-  let search: Point[] = [from];
 
   const col = code[from.y][from.x];
   if (separateWhite && Colors[col] === '#ffffff') {
@@ -250,4 +259,115 @@ export function getColorBlock(from: Point, size: Size, code: number[][], separat
     }
   }
   return newBlock;
+}
+
+// スタック命令の読み取り・スタックの更新
+function updateStack(e: Env): Env{
+  const n = e.code[e.next.y][e.next.x];
+  const c = e.code[e.crnt.y][e.crnt.x];
+  const w = Colors.indexOf('#ffffff');
+  if(n === w || c === w)return e;
+  const op = ((((Math.floor(n/3)-Math.floor(c/3))%6+6)%6*3+((n%3-c%3)%3+3)%3)%18+18)%18;
+  console.log(Operations[op]);
+  switch(op){
+    case 1:// push
+      e.stack.push(e.block.length);
+      break;
+    case 2:// pop
+      e.stack.pop();
+      break;
+    case 3:// add
+      if(2 <= e.stack.length){
+        e.stack[e.stack.length-2] += e.stack.pop()!;
+      }
+      break;
+    case 4:// sub
+      if(2 <= e.stack.length){
+        e.stack[e.stack.length-2] -= e.stack.pop()!;
+      }
+      break;
+    case 5:// mul
+      if(2 <= e.stack.length){
+        e.stack[e.stack.length-2] *= e.stack.pop()!;
+      }
+      break;
+    case 6:// div
+      if(2 <= e.stack.length){
+        e.stack[e.stack.length-2] = Math.floor(e.stack[e.stack.length-2] / e.stack.pop()!);
+      }
+      break;
+    case 7:// mod
+      if(2 <= e.stack.length){
+        let f = e.stack.pop()!;
+        let s = e.stack.pop()!;
+        if(f === 0){
+          // devide by 0 error
+          break;
+        }
+        e.stack.push((s%f+f)%f);
+      }
+      break;
+    case 8:// not
+      if(1 <= e.stack.length){
+        e.stack.push(e.stack.pop()?0:1);
+      }
+      break;
+    case 9:// greater
+      if(2 <= e.stack.length){
+        e.stack.push(e.stack.pop()! < e.stack.pop()! ? 1 : 0);
+      }
+      break;
+    case 10:// pointer
+      if(1 <= e.stack.length){
+        e.dp += (e.stack.pop()! % 4 + 4) % 4;
+      }
+      break;
+    case 11:// switch
+      if(1 <= e.stack.length){
+        e.cc += (e.stack.pop()! % 4 + 4) % 4;
+      }
+      break;
+    case 12:// duplicate
+      if(1 <= e.stack.length){
+        e.stack.push(e.stack[e.stack.length-1]);
+      }
+      break;
+    case 13:// roll
+      if(2 <= e.stack.length){
+        let n = e.stack.pop()!;
+        let depth = e.stack.pop()!;
+        let p: number;
+        if(depth < 0 || e.stack.length < depth){
+          // このときどうすればいいのかわからん
+          // とりあえず戻しとく
+          e.stack.push(depth);
+          e.stack.push(n);
+          break;
+        }
+        n = (n%depth + depth) % depth;
+        for(let i=0; i<n; i++){
+          p = e.stack.pop()!;
+          e.stack.splice(e.stack.length-depth,0,p);
+        }
+      }
+      break;
+    case 14:// in(num)
+      console.log('in(n)');
+      break;
+    case 15:// in(char)
+      console.log('in(c)');
+      break;
+    case 16:// out(num)
+      if(1 <= e.stack.length){
+        console.log(`%c${e.stack.pop()}`, 'color:#ff8000; font-size:20px;');
+      }
+      break;
+    case 17:// out(char)
+      if(1 <= e.stack.length){
+        console.log(`%c${String.fromCodePoint(e.stack.pop()!)}`, 'color:#ffff00; font-size:20px;');
+      }
+      break;
+  }
+  console.log(e.stack);
+  return e;
 }

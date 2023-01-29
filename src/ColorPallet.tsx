@@ -12,13 +12,14 @@ export default function ColorPallet(
     setEnv(e=>({...e, fillColor0:i}));
   }
   function HandleRadioRClick(i: number) {
-    console.log('undefined operation');
+    setEnv(e=>({...e, baseColor:i}))
   }
 
   return (
     <table id="ColorPallet">
       {(() => {
         const tr: JSX.Element[] = [];
+        const b = env.baseColor;
 
         for (let r = 0; r < 7; r++) {
           const td: JSX.Element[] = [];
@@ -41,7 +42,7 @@ export default function ColorPallet(
                     onContextMenu={() => HandleRadioRClick(r * 3 + c)}
                     style={{ background: Colors[r * 3 + c] }}
                   >
-                    {Operations[r * 3 + c]}
+                    {Operations[r===6 ? r*3+c : ((((r-Math.floor(b/3))%6+6)%6 * 3 + ((c-b)%3+3)%3) % 18 + 18)  % 18]}
                   </div>
                 </label>
               </td>

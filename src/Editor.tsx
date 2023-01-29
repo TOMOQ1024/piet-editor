@@ -27,9 +27,11 @@ export default function Editor(
       cc: 0,
       block: [],
       stuck: 0,
+      halted: false,
       stack: [],
       input: '',
       output: '',
+      baseColor: 0,
       fillColor0: 0,
       ctrl: 'draw'
     }
