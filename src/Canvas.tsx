@@ -3,7 +3,7 @@ import './App.css';
 import { getColorBlock } from './Interpreter';
 import { Colors, Env, isInCanvas, Point } from './Utils';
 
-const codelScale = 20;
+const codelScale = 40;
 let first = true;
 
 export default function Canvas(
@@ -109,8 +109,8 @@ export default function Canvas(
   return (
       <canvas
         id="canvas"
-        width={env.size.w * 20 + 1}
-        height={env.size.h * 20 + 1}
+        width={env.size.w * 40 + 1}
+        height={env.size.h * 40 + 1}
       />
   )
 }

@@ -42,7 +42,9 @@ export default function ColorPallet(
                     onContextMenu={() => HandleRadioRClick(r * 3 + c)}
                     style={{ background: Colors[r * 3 + c] }}
                   >
-                    {Operations[r===6 ? r*3+c : ((((r-Math.floor(b/3))%6+6)%6 * 3 + ((c-b)%3+3)%3) % 18 + 18)  % 18]}
+                    <span className='operation-tag'>
+                      {Operations[r===6 ? r*3+c : ((((r-Math.floor(b/3))%6+6)%6 * 3 + ((c-b)%3+3)%3) % 18 + 18)  % 18]}
+                    </span>
                   </div>
                 </label>
               </td>
