@@ -4,6 +4,8 @@ import './index.css';
 import Editor from './Editor';
 import reportWebVitals from './reportWebVitals';
 import { Colors } from './Utils';
+import SideMenu from './SideMenu';
+import App from './App';
 
 let size = {
   w: 10,
@@ -19,12 +21,10 @@ for(let y=0; y<size.h; y++){
   }
 }
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
-    <Editor
+    <App
     code={code}
     size={size}
     />

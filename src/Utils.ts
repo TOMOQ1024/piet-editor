@@ -17,6 +17,13 @@ export const ctrls = [
 ] as const;
 export type Ctrl = typeof ctrls[number];
 
+export const displays = [
+  'editor',
+  'import',
+  'export',
+] as const;
+export type Display = typeof displays[number];
+
 export interface Env {
   crnt: Point,
   next: Point,

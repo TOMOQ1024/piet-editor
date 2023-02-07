@@ -9,36 +9,13 @@ import { Env, Point } from './Utils';
 
 
 export default function Editor(
-  props: {
-    code: number[][],
-    size: {
-      w: number,
-      h: number,
-    }
+  { env, setEnv }: {
+    env: Env;
+    setEnv: (f: (e: Env) => Env) => void;
   }
 ) {
-  const [env, setEnv] = useState<Env>(
-    {
-      crnt: {x:0,y:0},
-      next: {x:-1,y:-1},
-      size: props.size,
-      code: props.code,
-      dp: 0,
-      cc: 0,
-      block: [],
-      stuck: 0,
-      halted: false,
-      stack: [],
-      input: '',
-      output: '',
-      baseColor: 0,
-      fillColor0: 0,
-      ctrl: 'draw'
-    }
-  );
-
   return (
-    <div className="Editor">
+    <div id="Editor">
       <Controls
       env={env}
       setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
@@ -58,6 +35,7 @@ export default function Editor(
           setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
           />
         </div>
+        <img src="../logo512.png" alt="temp" />
       </div>
     </div>
   );

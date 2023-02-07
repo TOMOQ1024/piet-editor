@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faArrowPointer, faPen, faFillDrip } from "@fortawesome/free-solid-svg-icons";
+import { faArrowPointer, faPen, faFillDrip, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
 import { ctrls, Env } from "./Utils";
 
@@ -11,23 +11,29 @@ const controlIcons: IconDefinition[] = [
   faFillDrip,
 ]
 
-function Control(props: { icon: IconDefinition, tag: number, selectedTag: number }) {
+function Control(
+  {icon, type, tag, selectedTag}: {
+    icon: IconDefinition,
+    type: React.HTMLInputTypeAttribute,
+    tag: number,
+    selectedTag: number,
+  }) {
   return (
     <div style={{ display: "inline-block" }}>
       <input
-        id={`ctrl-rd-${props.tag}`}
+        id={`ctrl-rd-${tag}`}
         className="control-radio"
-        type="radio"
+        type={type}
         name="controls"
-        value={props.tag}
+        value={tag}
         style={{ display: "none" }}
-        defaultChecked={props.tag === props.selectedTag}
+        defaultChecked={tag === selectedTag}
       />
-      <label htmlFor={`ctrl-rd-${props.tag}`}>
+      <label htmlFor={`ctrl-rd-${tag}`}>
         <FontAwesomeIcon
-          id={`control_${props.tag}`}
+          id={`control_${tag}`}
           className="control"
-          icon={props.icon}
+          icon={icon}
         />
       </label>
     </div>
@@ -55,13 +61,24 @@ export default function Controls(
   function OnControlClicked(e:MouseEvent) {
     if (e.target === null) return;
     const i = Number((e.target as HTMLDivElement).id.replace(/[^\d]/g,''));
-    setEnv(e=>({...e, ctrl: ctrls[i]}));
+    switch(i) {
+      case 0:
+      case 1:
+      case 2:
+        setEnv(e=>({...e, ctrl: ctrls[i]}));
+        break;
+      case 3:
+        // import
+        console.log('import');
+        break;
+    }
   }
 
   return (
     <div>{controlIcons.map((v, i) =>
       <Control
         key={i}
+        type={i<3 ? 'radio' : 'checkbox'}
         tag={i}
         icon={v}
         selectedTag={ctrls.indexOf(env.ctrl)}

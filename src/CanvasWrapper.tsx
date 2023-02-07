@@ -11,30 +11,39 @@ export default function CanvasWrapper(
     setEnv: (f: (e: Env) => Env) => void;
   }
 ) {
-  const [MouseDownPos, setMouseDownPos] = useState<Point>({x:0,y:0});
+  const [MouseDownPos, setMouseDownPos] = useState<Point>({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
-  const [translate, setTranslate] = useState<Point>({x:0, y:0});
-  const [translateOnMouseDown, setTranslateOnMouseDown] = useState<Point>({x:0, y:0});
+  const [translate, setTranslate] = useState<Point>({ x: 0, y: 0 });
+  const [translateOnMouseDown, setTranslateOnMouseDown] = useState<Point>({ x: 0, y: 0 });
 
-  useEffect(()=>{
+  useEffect(() => {
     // 各イベントの追加
-    document.addEventListener('wheel', HandleWheel, {passive: false});
-    document.addEventListener('mousedown', HandleMouseDown, {passive: false});
-    document.addEventListener('mousemove', HandleMouseMove, {passive: false});
-    document.addEventListener('contextmenu', HandleContextMenu, {passive: false});
+    const self = document.querySelector('#CanvasWrapper');
+    document.addEventListener('wheel', HandleWheel, { passive: false });
+    document.addEventListener('mousedown', HandleMouseDown, { passive: false });
+    document.addEventListener('mousemove', HandleMouseMove, { passive: false });
+    document.addEventListener('contextmenu', HandleContextMenu, { passive: false });
+    if(self){
+      self.addEventListener('dragover', HandleDragOver, { passive: false });
+      self.addEventListener('drop', HandleDrop, { passive: false });
+    }    
     return (() => {
       document.removeEventListener('wheel', HandleWheel);
       document.removeEventListener('mousedown', HandleMouseDown);
       document.removeEventListener('mousemove', HandleMouseMove);
       document.removeEventListener('contextmenu', HandleContextMenu);
-  });
+      if(self){
+        self.removeEventListener('dragover', HandleDragOver);
+        self.removeEventListener('drop', HandleDrop);
+      }    
+    });
   }, [env, MouseDownPos, scale, translate, translateOnMouseDown]);
 
   function HandleMouseDown(e: MouseEvent) {
     const self = document.getElementById('CanvasWrapper');
     const cdiv = document.getElementById('canvasdiv');
     if (self === null || cdiv === null) return;
-    const s:Size = {
+    const s: Size = {
       w: self.getBoundingClientRect().width,
       h: self.getBoundingClientRect().height,
     };
@@ -46,12 +55,12 @@ export default function CanvasWrapper(
       x: X0,
       y: Y0,
     });
-    setTranslateOnMouseDown(t=>({
+    setTranslateOnMouseDown(t => ({
       x: translate.x,
       y: translate.y
     }));
-    if(!isInCanvas(s, X, Y))return;
-    if(env.ctrl !== 'move'){
+    if (!isInCanvas(s, X, Y)) return;
+    if (env.ctrl !== 'move') {
       HandleMouseMove(e);
     }
   }
@@ -62,15 +71,15 @@ export default function CanvasWrapper(
     const cdiv = document.getElementById('canvasdiv');
     const cvs = document.getElementById('canvas');
     if (self === null || cvs === null || cdiv === null) return;
-    const s:Size = {
+    const s: Size = {
       w: self.getBoundingClientRect().width,
       h: self.getBoundingClientRect().height,
     };
-    const m:Point = {
+    const m: Point = {
       x: e.clientX - self.getBoundingClientRect().x - 2,
       y: e.clientY - self.getBoundingClientRect().y - 2,
     }
-    const d:Point = {
+    const d: Point = {
       x: MouseDownPos.x - self.getBoundingClientRect().x - 2,
       y: MouseDownPos.y - self.getBoundingClientRect().y - 2,
     }
@@ -78,28 +87,28 @@ export default function CanvasWrapper(
     const y = (m.y - translate.y) / scale;
     const downOutside = !isInCanvas(s, d.x, d.y);
     const moveOutside = !isInCanvas(s, m.x, m.y);
-    
+
     // cdiv.dispatchEvent(new CustomEvent('mm', {detail: {x:X,y:y}}));
 
-    switch(env.ctrl){
+    switch (env.ctrl) {
       case 'move':
-        if(downOutside&&moveOutside)return;
+        if (downOutside && moveOutside) return;
         const delta: Point = {
           x: e.clientX - MouseDownPos.x,
           y: e.clientY - MouseDownPos.y,
         };
-        setTranslate(t=>({
+        setTranslate(t => ({
           x: translateOnMouseDown.x + delta.x,
           y: translateOnMouseDown.y + delta.y,
         }))
         break;
       case 'draw':
-        if(moveOutside)return;
-        cvs?.dispatchEvent(new CustomEvent('setcodel', {detail: {x:x, y:y}}));
+        if (moveOutside) return;
+        cvs?.dispatchEvent(new CustomEvent('setcodel', { detail: { x: x, y: y } }));
         break;
       case 'fill':
-        if(moveOutside)return;
-        cvs?.dispatchEvent(new CustomEvent('fillcodel', {detail: {x:x, y:y}}));
+        if (moveOutside) return;
+        cvs?.dispatchEvent(new CustomEvent('fillcodel', { detail: { x: x, y: y } }));
         break;
     }
   }
@@ -108,44 +117,44 @@ export default function CanvasWrapper(
     e.preventDefault();
     // Wrapper外の場合無視
     const self = document.getElementById('CanvasWrapper');
-    if(self === null)return;
-    const s:Size = {
+    if (self === null) return;
+    const s: Size = {
       w: self.getBoundingClientRect().width,
       h: self.getBoundingClientRect().height,
     };
-    const d:Point = {
+    const d: Point = {
       x: e.clientX - self.getBoundingClientRect().x - 2,
       y: e.clientY - self.getBoundingClientRect().y - 2,
     }
-    if(!isInCanvas(s, d.x, d.y))return;
-    if(e.ctrlKey){
+    if (!isInCanvas(s, d.x, d.y)) return;
+    if (e.ctrlKey) {
       // ズーム(canvas上のマウス位置が変わらないようにズームする)
       const isPinch = !!(e.deltaY % 1);
-      const a = (e.shiftKey ? .999 : .99)**(e.deltaY * (isPinch ? 1 : .1));// scale変更の係数
+      const a = (e.shiftKey ? .999 : .99) ** (e.deltaY * (isPinch ? 1 : .1));// scale変更の係数
       const self = document.getElementById('CanvasWrapper');
-      if(self === null)return;
-      const p:Point = {
+      if (self === null) return;
+      const p: Point = {
         x: e.clientX - self.getBoundingClientRect().x - 2,
         y: e.clientY - self.getBoundingClientRect().y - 2,
       }
-      setTranslate(t=>({
-        x:p.x-(p.x-t.x)*a,
-        y:p.y-(p.y-t.y)*a,
+      setTranslate(t => ({
+        x: p.x - (p.x - t.x) * a,
+        y: p.y - (p.y - t.y) * a,
       }));
-      setScale(s=>a*s);
+      setScale(s => a * s);
     }
-    else if(e.shiftKey){
+    else if (e.shiftKey) {
       // 横方向移動
-      setTranslate(({x:x,y:y})=>({
-        x:x-e.deltaY*0.5,
-        y:y-e.deltaX*0.5,
+      setTranslate(({ x: x, y: y }) => ({
+        x: x - e.deltaY * 0.5,
+        y: y - e.deltaX * 0.5,
       }));
     }
-    else{
+    else {
       // 縦方向移動
-      setTranslate(({x:x,y:y})=>({
-        x:x-e.deltaX*0.5,
-        y:y-e.deltaY*0.5,
+      setTranslate(({ x: x, y: y }) => ({
+        x: x - e.deltaX * 0.5,
+        y: y - e.deltaY * 0.5,
       }));
     }
   }
@@ -154,13 +163,41 @@ export default function CanvasWrapper(
     e.preventDefault();
   }
 
+  function HandleDragOver(e: Event) {
+    e.preventDefault();
+    e.stopPropagation();
+    const dt = (e as unknown as DragEvent).dataTransfer!;
+    dt.dropEffect = 'copy';
+    console.log(e);
+  }
+
+  function HandleDrop(e: Event) {
+    e.stopPropagation();
+    e.preventDefault();
+    const reader = new FileReader();
+    const file = (e as unknown as DragEvent).dataTransfer!.files[0];
+    reader.onload = function (e) {
+      // document.getElementById('preview').src = e.target.result;
+      console.log(e.target?.result);
+    }
+    if(file && file.type.match('image.*')){
+      reader.readAsDataURL(file);
+    }
+    else {
+      console.log(e);
+    }
+  };
+
   return (
     <div
       id='CanvasWrapper'
     >
+      {
+        //
+      }
       <CanvasDiv
         env={env}
-        setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
+        setEnv={(f: (e: Env) => Env) => setEnv(f)}
         style={{
           scale: `${scale}`,
           left: `${translate.x}px`,
