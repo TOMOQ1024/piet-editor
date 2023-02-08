@@ -1,6 +1,3 @@
-import { useState } from 'react';
-import './App.css';
-
 export default function DebugButton(
   props: {
     name: string,

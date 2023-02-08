@@ -1,6 +1,5 @@
 import DebugButton from './DebugButton';
 import { Colors, Env, isInCanvas, Operations, Point, Size } from './Utils';
-import './App.css';
 
 interface Buttons {
   [key: string]: Function
@@ -29,6 +28,7 @@ export default function Interpreter(
       stack: [],
       dp: 0,
       cc: 0,
+      input: (document.getElementById('ta-input') as HTMLTextAreaElement).value,
       output: '',
     };
   }
@@ -63,7 +63,7 @@ export default function Interpreter(
   }
 
   return (
-    <div className='InterpreterControls'>
+    <div id='InterpreterControls'>
       {Object.keys(buttons).map(name => (
         <DebugButton
           key={name}

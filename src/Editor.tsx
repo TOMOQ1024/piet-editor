@@ -1,4 +1,3 @@
-import './App.css';
 import Controls from './Controls';
 import ColorPallet from './ColorPallet';
 import CanvasWrapper from './CanvasWrapper';

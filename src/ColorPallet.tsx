@@ -1,5 +1,4 @@
 import { Colors, Env, Operations } from './Utils';
-import './App.css';
 
 export default function ColorPallet(
   {env,setEnv}: {

@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import './App.css';
 import { getColorBlock } from './Interpreter';
 import { Colors, Env, isInCanvas, Point } from './Utils';
 

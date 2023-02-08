@@ -1,5 +1,7 @@
 export default function Export() {
   return (
-    <div></div>
+    <div>
+      <div>hoge</div>
+    </div>
   );
 }

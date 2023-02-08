@@ -9,6 +9,7 @@ export function Input(
     <div>
       input<br/>
       <textarea
+      id='ta-input'
       onChange={e=>{
         setEnv(ev=>({...ev, input:e.target.value}));
       }}
@@ -25,7 +26,11 @@ export function Output(
   return (
     <div>
       output<br/>
-      <textarea readOnly value={env.output}/>
+      <textarea
+      id='ta-output'
+      value={env.output}
+      readOnly
+      />
     </div>
   )
 }

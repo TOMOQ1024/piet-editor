@@ -3,6 +3,7 @@ import Editor from "./Editor";
 import Export from "./Export";
 import Import from "./Import";
 import SideMenu from "./SideMenu";
+import './App.scss';
 import { Display, Env, Size } from "./Utils";
 
 export default function App(

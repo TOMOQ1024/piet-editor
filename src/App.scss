@@ -1,0 +1,153 @@
+#App {
+  display: flex;
+  justify-content: flex-start;
+  height: 100vh;
+  transition: .3s;
+  #SideMenu {
+    background-color: #ccc;
+    .tab-btn {
+      margin: 20px;
+      width: 40px;
+      height: 40px;
+      padding: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      color: #000;
+    }
+    .tab-radio:checked + label > .tab-btn {
+      color: #08f;
+      transform: scale(1.3);
+    }
+  }
+  #Editor {
+    #Controls {
+      .control {
+        background-color: #ccc;
+        border-radius: 50%;
+        margin: 5px;
+        width: 40px;
+        height: 40px;
+        padding: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+        &:hover {
+          filter: brightness(0.8) invert(0);
+        }
+        * {
+          pointer-events: none;
+        }
+      }
+      .control-radio:checked + label .control {
+        filter: brightness(0.8) invert(1);
+      }
+    }
+    .wrapper-main {
+      white-space: nowrap;
+      * {
+        vertical-align: top;
+      }
+      #ColorPallet {
+        display: inline-block;
+        table-layout: fixed;
+        /* filter: grayscale(1.0); */
+
+        .operation-button {
+          display: inline-block;
+          position: relative;
+          width: 70px;
+          height: 70px;
+          margin: 3px;
+          color: #fff;
+          text-shadow: black 0 0 3px, black 1px 1px 0;
+          box-shadow: 0 0 0 2px gray;
+          cursor: pointer;
+          vertical-align: bottom;
+
+          .operation-tag {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            translate: -50% -50%;
+            font-size: 15px;
+            font-weight: bold;
+            user-select: none;
+            pointer-events: none;
+          }
+        }
+
+        .pallet-radio:checked + label .operation-button {
+          box-shadow: 0 0 0 2px white, 0 0 0 4px black;
+        }
+      }
+      .wrapper-mid {
+        display: inline-block;
+        #CanvasWrapper {
+          display: inline-block;
+          border: solid 2px black;
+          width: 480px;
+          height: 480px;
+          overflow: hidden;
+          background-color: #ddd;
+          font-size: 0;
+          box-shadow: inset black 0 0 10px;
+          /* image-rendering: pixelated; */
+          position: relative;
+          #canvasdiv {
+            box-shadow: black 0 0 10px;
+            position: absolute;
+            width: 401px;
+            height: 401px;
+            transform-origin: 0 0;
+            left: 0;
+            top: 0;
+            display: inline-block;
+            pointer-events: none;
+            #canvas {
+              width: 100%;
+              height: 100%;
+              z-index: 10;
+            }
+          }
+        }
+        #InterpreterControls {
+          text-align: center;
+          .debug-button {
+            display: inline-block;
+            margin: 3px 0;
+            width: calc(25% - 8px);
+            text-align: center;
+            padding: 10px 3px;
+            font-size: 20px;
+            background: #eee;
+            border: solid 1px black;
+            cursor: pointer;
+            user-select: none;
+            &:hover {
+              filter: brightness(0.8);
+            }
+          }
+        }
+        #wrapper-io{
+          display: flex;
+          justify-content: space-evenly;
+          vertical-align: top;
+          >* {
+            width: 46%;
+          }
+          textarea {
+            width: 100%;
+            resize: vertical;
+          }
+        }
+      }
+    }
+  }
+}
+
+.resize-button-wrapper {
+  position: absolute;
+  font-size: xx-large;
+}
+
+
+

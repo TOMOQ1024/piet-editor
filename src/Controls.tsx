@@ -74,7 +74,7 @@ export default function Controls(
   }
 
   return (
-    <div>{controlIcons.map((v, i) =>
+    <div id='Controls'>{controlIcons.map((v, i) =>
       <Control
         key={i}
         type={i<3 ? 'radio' : 'checkbox'}
