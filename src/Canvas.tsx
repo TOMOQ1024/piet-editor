@@ -3,7 +3,6 @@ import { getColorBlock } from './Interpreter';
 import { Colors, Env, isInCanvas, Point } from './Utils';
 
 const codelScale = 40;
-let first = true;
 
 export default function Canvas(
   { env, setEnv }: {
@@ -11,44 +10,48 @@ export default function Canvas(
     setEnv: (f: (e: Env) => Env) => void;
   }
 ) {
-  useEffect(() => {
+  useEffect(()=>{
     RenderCanvas();
-    if (first) {
-      const cvs = document.getElementById("canvas") as HTMLCanvasElement;
-      const ctx = cvs.getContext('2d') as CanvasRenderingContext2D;
-      if (cvs === null) {
-        console.log('canvas not found at useEffect');
-        return;
-      }
-      cvs.addEventListener('setcodel', e => {
-        const x = Math.floor((e as CustomEvent).detail.x / codelScale);
-        const y = Math.floor((e as CustomEvent).detail.y / codelScale);
-        if (!isInCanvas(env.size, x, y)) return;
-        setEnv(e => {
-          e.code[y][x] = e.fillColor0;
-          return Object.assign({}, e);
-        })
-        RenderCodel(ctx, { x: x, y: y });
-      });
-      cvs.addEventListener('fillcodel', e => {
-        const pos: Point = {
-          x: Math.floor((e as CustomEvent).detail.x / codelScale),
-          y: Math.floor((e as CustomEvent).detail.y / codelScale),
-        };
-        if (!isInCanvas(env.size, pos.x, pos.y)) return;
-        const block = getColorBlock(pos, env.size, env.code, false);
-        setEnv(e => {
-          block.forEach(b=>{
-            e.code[b.y][b.x] = e.fillColor0;
-          })
-          return Object.assign({}, e);
-        })
-        RenderCanvas();
-      });
-      // console.log('event listener added');
-      first = false;
+  }, []);
+
+  useEffect(() => {
+    const cvs = document.getElementById("canvas") as HTMLCanvasElement;
+    cvs.addEventListener('setcodel', SetCodel);
+    cvs.addEventListener('fillcodel', FillCodel);
+    return () => {
+      cvs.removeEventListener('setcodel', SetCodel);
+      cvs.removeEventListener('fillcodel', FillCodel);
     }
   }, [env, setEnv]);
+
+  function SetCodel(e: Event){
+    const cvs = document.getElementById("canvas") as HTMLCanvasElement;
+    if(!cvs)return;
+    const ctx = cvs.getContext('2d') as CanvasRenderingContext2D;
+    const x = Math.floor((e as CustomEvent).detail.x / codelScale);
+    const y = Math.floor((e as CustomEvent).detail.y / codelScale);
+    if (!isInCanvas(env.size, x, y)) return;
+    setEnv(e => {
+      e.code[y][x] = e.fillColor0;
+      return Object.assign({}, e);
+    })
+    RenderCodel(ctx, { x: x, y: y });
+  }
+  function FillCodel(e: Event){
+    const pos: Point = {
+      x: Math.floor((e as CustomEvent).detail.x / codelScale),
+      y: Math.floor((e as CustomEvent).detail.y / codelScale),
+    };
+    if (!isInCanvas(env.size, pos.x, pos.y)) return;
+    const block = getColorBlock(pos, env.size, env.code, false);
+    setEnv(e => {
+      block.forEach(b=>{
+        e.code[b.y][b.x] = e.fillColor0;
+      })
+      return Object.assign({}, e);
+    })
+    RenderCanvas();
+  }
 
   function RenderCanvas() {
     const cvs = document.getElementById("canvas") as HTMLCanvasElement;

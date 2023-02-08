@@ -51,7 +51,7 @@ export default function App(
             );
           case 'export':
             return (
-              <Export/>
+              <Export env={env}/>
             );
           case 'import':
             return (
