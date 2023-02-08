@@ -352,17 +352,15 @@ function updateStack(e: Env): Env{
       }
       break;
     case 14:// in(num)
-      console.log('in(n)');
+      const num = e.input.match(/^\s*[+-]?\d+/u);
+      if(num){
+        e.input = e.input.slice(num[0].length);
+        e.stack.push(parseInt(num[0]));
+      }
       break;
     case 15:// in(char)
       let i = e.input.codePointAt(0);
-      if(Number.isInteger(i)){
-        e.stack.push(i!);
-      }
-      else {
-        // console.error(`in(c) caught an exception: ${e.input[0]} -> ${i}`);
-        e.stack.push(0);
-      }
+      e.stack.push(Number.isInteger(i) ? i! : 0);
       e.input = Array.from(e.input).slice(1).join('');
       break;
     case 16:// out(num)
