@@ -1,5 +1,7 @@
 export default function Import() {
   return (
-    <div></div>
+    <div>
+      <input type="file" />
+    </div>
   )
 }

@@ -1,10 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import Editor from './Editor';
 import reportWebVitals from './reportWebVitals';
 import { Colors } from './Utils';
-import SideMenu from './SideMenu';
 import App from './App';
 
 let size = {

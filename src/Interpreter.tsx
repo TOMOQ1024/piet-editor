@@ -1,4 +1,3 @@
-import { Key, useEffect, useState } from 'react';
 import DebugButton from './DebugButton';
 import { Colors, Env, isInCanvas, Operations, Point, Size } from './Utils';
 import './App.css';
@@ -30,6 +29,7 @@ export default function Interpreter(
       stack: [],
       dp: 0,
       cc: 0,
+      output: '',
     };
   }
 
@@ -227,7 +227,7 @@ export function getColorBlock(from: Point, size: Size, code: number[][], separat
       buf[y].push(code[y][x]);
     }
   }
-  let s0: Point, s: Point;
+  let s: Point;
   const d = [
     { x: 1, y: 0 },
     { x: 0, y: 1 },
@@ -355,16 +355,28 @@ function updateStack(e: Env): Env{
       console.log('in(n)');
       break;
     case 15:// in(char)
-      console.log('in(c)');
+      let i = e.input.codePointAt(0);
+      if(Number.isInteger(i)){
+        e.stack.push(i!);
+      }
+      else {
+        // console.error(`in(c) caught an exception: ${e.input[0]} -> ${i}`);
+        e.stack.push(0);
+      }
+      e.input = Array.from(e.input).slice(1).join('');
       break;
     case 16:// out(num)
       if(1 <= e.stack.length){
-        console.log(`%c${e.stack.pop()}`, 'color:#ff8000; font-size:20px;');
+        let i = e.stack.pop()!;
+        e.output += `${i}`;
+        console.log(`%c${i}`, 'color:#ff8000; font-size:20px;');
       }
       break;
     case 17:// out(char)
       if(1 <= e.stack.length){
-        console.log(`%c${String.fromCodePoint(e.stack.pop()!)}`, 'color:#ffff00; font-size:20px;');
+        let i = e.stack.pop()!;
+        e.output += String.fromCodePoint(i);
+        console.log(`%c${String.fromCodePoint(i)}`, 'color:#ffff00; font-size:20px;');
       }
       break;
   }

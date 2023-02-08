@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Colors, Env, Operations } from './Utils';
 import './App.css';
 

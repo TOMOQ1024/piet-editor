@@ -3,8 +3,8 @@ import Controls from './Controls';
 import ColorPallet from './ColorPallet';
 import CanvasWrapper from './CanvasWrapper';
 import Interpreter from './Interpreter';
-import { useEffect, useState } from 'react';
-import { Env, Point } from './Utils';
+import { Env } from './Utils';
+import { Input, Output } from './IO';
 
 
 
@@ -34,8 +34,16 @@ export default function Editor(
           env={env}
           setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
           />
+          <div id='wrapper-io'>
+            <Input
+            setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
+            />
+            <Output
+            env={env}
+            />
+          </div>
         </div>
-        <img src="../logo512.png" alt="temp" />
+        {/* <img src="../logo512.png" alt="temp" /> */}
       </div>
     </div>
   );

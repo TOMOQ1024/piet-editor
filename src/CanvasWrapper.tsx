@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import Canvas from './Canvas';
 import CanvasDiv from './CanvasDiv';
 import { Env, isInCanvas, Point, Size } from './Utils';
 
@@ -145,16 +144,16 @@ export default function CanvasWrapper(
     }
     else if (e.shiftKey) {
       // 横方向移動
-      setTranslate(({ x: x, y: y }) => ({
-        x: x - e.deltaY * 0.5,
-        y: y - e.deltaX * 0.5,
+      setTranslate(t => ({
+        x: t.x - e.deltaY * 0.5,
+        y: t.y - e.deltaX * 0.5,
       }));
     }
     else {
       // 縦方向移動
-      setTranslate(({ x: x, y: y }) => ({
-        x: x - e.deltaX * 0.5,
-        y: y - e.deltaY * 0.5,
+      setTranslate(t => ({
+        x: t.x - e.deltaX * 0.5,
+        y: t.y - e.deltaY * 0.5,
       }));
     }
   }

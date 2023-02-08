@@ -149,3 +149,18 @@
 .debug-button:hover {
   filter: brightness(0.8);
 }
+
+#wrapper-io{
+  display: flex;
+  justify-content: space-evenly;
+  vertical-align: top;
+}
+
+#wrapper-io > * {
+  width: 46%;
+}
+
+#wrapper-io textarea {
+  width: 100%;
+  resize: vertical;
+}

@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faArrowPointer, faPen, faFillDrip, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faArrowPointer, faPen, faFillDrip } from "@fortawesome/free-solid-svg-icons";
 import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
 import { ctrls, Env } from "./Utils";
 
@@ -56,7 +55,7 @@ export default function Controls(
         }
       }
     });
-  }, []);
+  });
 
   function OnControlClicked(e:MouseEvent) {
     if (e.target === null) return;

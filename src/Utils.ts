@@ -35,8 +35,8 @@ export interface Env {
   stuck: number,
   halted: boolean,
   stack: number[],
-  input: '',
-  output: '',
+  input: string,
+  output: string,
   baseColor: number,
   fillColor0: number,
   ctrl: Ctrl,
@@ -71,6 +71,6 @@ export const Operations = [
 ]
 
 export function useForceUpdate() {
-  const [ignored, newState] = useState({});
+  const [, newState] = useState({});
   return useCallback(() => newState({}), []);
 }

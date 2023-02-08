@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import './App.css';
 import { getColorBlock } from './Interpreter';
 import { Colors, Env, isInCanvas, Point } from './Utils';
@@ -49,7 +49,7 @@ export default function Canvas(
       // console.log('event listener added');
       first = false;
     }
-  }, [env]);
+  }, [env, setEnv]);
 
   function RenderCanvas() {
     const cvs = document.getElementById("canvas") as HTMLCanvasElement;
@@ -62,7 +62,6 @@ export default function Canvas(
       codelScale * env.size.w + 1,
       codelScale * env.size.h + 1
     );
-    let pos = { x: 0, y: 0 };
     for (let y = 0; y < env.size.h; y++) {
       for (let x = 0; x < env.size.w; x++) {
         RenderCodel(ctx, { x: x, y: y });
