@@ -2,29 +2,29 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { Colors } from './Utils';
 import App from './App';
+import { LoadURL } from './Compressor';
 
-let size = {
-  w: 10,
-  h: 10,
-}
+let e = LoadURL();
 
-const w = Colors.indexOf("#ffffff");
-let code: number[][] = [];
-for(let y=0; y<size.h; y++){
-  code.push([]);
-  for(let x=0; x<size.w; x++){
-    code[y].push(w);
+if(!e.size.w){
+  const size = {w: 10, h: 10};
+  let code: string[][] = [];
+  for(let y=0; y<size.h; y++){
+    code.push([]);
+    for(let x=0; x<size.w; x++){
+      code[y].push('#ffffff');
+    }
   }
+  e.size = size;
+  e.code = code;
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
     <App
-    code={code}
-    size={size}
+    env0={e}
     />
   </React.StrictMode>
 );

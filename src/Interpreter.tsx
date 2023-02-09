@@ -80,7 +80,7 @@ export default function Interpreter(
 function getNextCodel(e: Env): Env {
   e.block = getColorBlock(e.crnt, e.size, e.code, true);
   let ec: Point;
-  const black = Colors.indexOf('#000000');
+  const black = '#000000';
   let d: Point;
   e.stuck = 0;
   while (e.stuck < 8) {
@@ -213,14 +213,14 @@ function getEdgeCodel(e: Env): Point {
 }
 
 // カラーブロックの取得
-export function getColorBlock(from: Point, size: Size, code: number[][], separateWhite: boolean): Point[] {
+export function getColorBlock(from: Point, size: Size, code: string[][], separateWhite: boolean): Point[] {
   let newBlock: Point[] = [];
 
   const col = code[from.y][from.x];
-  if (separateWhite && Colors[col] === '#ffffff') {
+  if (separateWhite && col === '#ffffff') {
     return [from];
   }
-  let buf: number[][] = [];
+  let buf: string[][] = [];
   for (let y = 0; y < size.h; y++) {
     buf.push([]);
     for (let x = 0; x < size.w; x++) {
@@ -236,7 +236,7 @@ export function getColorBlock(from: Point, size: Size, code: number[][], separat
   ];
 
   function fill(p: Point){
-    buf[p.y][p.x] = -1;
+    buf[p.y][p.x] = '';
     d.forEach(d0 => {
       s = {x:p.x+d0.x, y:p.y+d0.y};
       // 進めるコーデルか
@@ -253,7 +253,7 @@ export function getColorBlock(from: Point, size: Size, code: number[][], separat
   for (let y = 0; y < size.h; y++) {
     for (let x = 0; x < size.w; x++) {
       buf[y].push(code[y][x]);
-      if(buf[y][x] < 0){
+      if(!buf[y][x].length){
         newBlock.push({x:x, y:y});
       }
     }
@@ -263,8 +263,8 @@ export function getColorBlock(from: Point, size: Size, code: number[][], separat
 
 // スタック命令の読み取り・スタックの更新
 function updateStack(e: Env): Env{
-  const n = e.code[e.next.y][e.next.x];
-  const c = e.code[e.crnt.y][e.crnt.x];
+  const n = Colors.indexOf(e.code[e.next.y][e.next.x]);
+  const c = Colors.indexOf(e.code[e.crnt.y][e.crnt.x]);
   const w = Colors.indexOf('#ffffff');
   if(n === w || c === w)return e;
   const op = ((((Math.floor(n/3)-Math.floor(c/3))%6+6)%6*3+((n%3-c%3)%3+3)%3)%18+18)%18;

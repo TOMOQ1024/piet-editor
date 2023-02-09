@@ -7,7 +7,7 @@ export default function ColorPallet(
   }
 ) {
   function HandleRadioLClick(i: number) {
-    setEnv(e=>({...e, fillColor0:i}));
+    setEnv(e=>({...e, fillColor0:Colors[i]}));
   }
   function HandleRadioRClick(i: number) {
     setEnv(e=>({...e, baseColor:i}))

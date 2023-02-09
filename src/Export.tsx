@@ -15,12 +15,12 @@ export default function Export(
       ctx.imageSmoothingEnabled = false;
       for(let y=0; y<env.size.h; y++){
         for(let x=0; x<env.size.w; x++){
-          ctx.fillStyle = Colors[env.code[y][x]];
+          ctx.fillStyle = env.code[y][x];
           ctx.fillRect(x*10, y*10, 10, 10);
         }
       }
     }
-  }, [env.code]);
+  }, [env.code, env.size]);
   return (
     <div id='Export'>
       <canvas id='canvas-export'/>

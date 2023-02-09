@@ -12,7 +12,7 @@ export default function Canvas(
 ) {
   useEffect(()=>{
     RenderCanvas();
-  }, []);
+  }, [env]);
 
   useEffect(() => {
     const cvs = document.getElementById("canvas") as HTMLCanvasElement;
@@ -69,15 +69,13 @@ export default function Canvas(
         RenderCodel(ctx, { x: x, y: y });
       }
     }
-
-
   }
 
   function RenderCodel(
     ctx: CanvasRenderingContext2D,
     pos: { x: number, y: number }
   ) {
-    ctx.fillStyle = Colors[env.code[pos.y][pos.x]];
+    ctx.fillStyle = env.code[pos.y][pos.x];
     ctx.fillRect(
       pos.x * codelScale + 1,
       pos.y * codelScale + 1,

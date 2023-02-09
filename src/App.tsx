@@ -1,38 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Editor from "./Editor";
 import Export from "./Export";
 import Import from "./Import";
 import SideMenu from "./SideMenu";
 import './App.scss';
-import { Display, Env, Size } from "./Utils";
+import { Display, Env, env_init, Size } from "./Utils";
+import { Decode, Encode, UpdateURL } from "./Compressor";
 
 export default function App(
-  {code, size}: {
-    code: number[][],
-    size: Size
+  {env0}: {
+    env0: Env
   }
 ) {
-  const [env, setEnv] = useState<Env>(
-    {
-      crnt: {x:0,y:0},
-      next: {x:-1,y:-1},
-      size: size,
-      code: code,
-      dp: 0,
-      cc: 0,
-      block: [],
-      stuck: 0,
-      halted: false,
-      stack: [],
-      input: '',
-      output: '',
-      baseColor: 0,
-      fillColor0: 0,
-      ctrl: 'draw',
-    }
-  );
+  const [env, setEnv] = useState<Env>(env0);
 
   const [dis, setDis] = useState<Display>('editor');
+
+  // URLの自動更新
+  useEffect(()=>{
+    const saver = setInterval(()=>{
+      UpdateURL(env);
+    }, 10000);
+    return () => {
+      clearInterval(saver);
+    }
+  }, []);
 
   return (
     <div id='App'>
