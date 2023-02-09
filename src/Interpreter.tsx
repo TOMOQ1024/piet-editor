@@ -35,7 +35,7 @@ export default function Interpreter(
 
   function run(): Env{
     let e = env;
-    for(let i=0; i<100 && !e.halted; i++){
+    for(let i=0; i<1000 && !e.halted; i++){
       e = step();
     }
     return step();

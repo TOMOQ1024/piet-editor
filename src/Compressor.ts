@@ -1,54 +1,88 @@
-import { Colors, Env, env_init } from "./Utils";
+import { Env, env_init } from "./Utils";
+
+function HtoB (h:string): string {
+  let rtn = '';
+  if(h.match(/[^0-9a-f]/)){
+    console.error('invalid argumant');
+    return '';
+  }
+  for(let i=h.length; i%2; i++) h += '0';
+  return String.fromCharCode(...h.match(/.{2}/g)!.map(v=>parseInt(v,16)));
+}
+
+function BtoH (b:string): string {
+  const cc = b.split('').map(v=>v.charCodeAt(0));
+  if(cc.filter(v=>v<0||256<=v).length){
+    console.error('invalid argumant');
+    return '';
+  }
+  return cc.map(v=>v.toString(16).padStart(2,'0')).join('');
+}
 
 export function Encode(e:Env): string {
   let i: number;
   let c: string;
   let colors: string[] = [];
+  let arr: number[] = [];
   let result: string = '';
   for(let y=0; y<e.size.h; y++){
     for(let x=0; x<e.size.w; x++){
       c = e.code[y][x].replace(/^#/, '');
       i = colors.indexOf(c);
       if(i < 0){
-        result += `${colors.length}`;
+        arr.push(colors.length);
         colors.push(c);
       }
       else {
-        result += `${i}`;
+        arr.push(i);
       }
     }
   }
-  console.log(`${e.size.w},${e.size.h},${colors.length},${colors.join(',')},`+result);
-  return btoa(`${e.size.w},${e.size.h},${colors.length},${colors.join(',')},`+result);
+  let l = Math.ceil(Math.log2(colors.length)/4) || 1;
+  result = `${e.size.w}f${e.size.h}f${colors.length}f${colors.join('')}${arr.map(i=>i.toString(16).padStart(l,'0')).join('')}`;
+  // console.log('encode');
+  // console.log(result);
+  // console.log(HtoB(result));
+  // console.log(btoa(HtoB(result)));
+  // console.log(atob(btoa(HtoB(result))));
+  // console.log(BtoH(atob(btoa(HtoB(result)))));
+  return btoa(HtoB(result)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'A');
 }
 
 export function Decode(rawdata: string): Env|null {
-  let data = atob(rawdata);
-  console.log(data);
-  if(!data.match(/\d+,\d+,\d+,([0-9a-z]{6},)+\d+/))return null;
+  // console.log('decode');
+  // console.log(rawdata.replace(/-/g,'+').replace(/_/g,'/'));
+  // console.log(atob(rawdata.replace(/-/g,'+').replace(/_/g,'/')));
+  // console.log(BtoH(atob(rawdata.replace(/-/g,'+').replace(/_/g,'/'))));
+  let data = BtoH(atob(rawdata.replace(/-/g,'+').replace(/_/g,'/')));
+  // console.log(data);
+  if(!data.match(/\d+f\d+f\d+f[0-9a-f]+/))return null;
 
   const w = parseInt(data.match(/^\d+/)![0]);
-  data = data.replace(/^\d+,/,'');
+  data = data.replace(/^\d+f/,'');
   const h = parseInt(data.match(/^\d+/)![0]);
-  data = data.replace(/^\d+,/,'');
+  data = data.replace(/^\d+f/,'');
   const c = parseInt(data.match(/^\d+/)![0]);
-  data = data.replace(/^\d+,/,'');
+  data = data.replace(/^\d+f/,'');
+  let l = Math.ceil(Math.log2(c)/4) || 1;
 
   let colors: string[] = [];
   let code: string[][] = [];
   try {
     for(let i=0; i<c; i++){
-      colors.push(data.match(/^[0-9a-z]{6}/)![0]);
-      data = data.replace(/^[0-9a-z]{6},/,'');
+      colors.push(data.match(/^[0-9a-f]{6}/)![0]);
+      data = data.replace(/^[0-9a-f]{6}/,'');
     }
+
+    let arr = data.match(new RegExp(`.{1,${l}}`, 'g'))!.map(v=>parseInt(v,16));
   
     for(let y=0; y<h; y++){
       code.push([]);
       for(let x=0; x<w; x++){
-        code[y].push(`#${colors[+data[x+y*w]]}`);
+        code[y].push(`#${colors[arr[x+y*w]]}`);
       }
     }
-    console.log(code);
+    // console.log(code);
   }
   catch(er){
     console.error(er);
@@ -77,7 +111,7 @@ const updateQueryParams = (newKey:string, newValue:string) => {
 
 export function UpdateURL(e: Env) {
   updateQueryParams('content', Encode(e));
-  console.log('Saved automatically!');
+  // console.log('Saved automatically!');
 }
 
 export function LoadURL(): Env {

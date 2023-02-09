@@ -20,7 +20,7 @@ export default function App(
   useEffect(()=>{
     const saver = setInterval(()=>{
       UpdateURL(env);
-    }, 10000);
+    }, 1000);
     return () => {
       clearInterval(saver);
     }
