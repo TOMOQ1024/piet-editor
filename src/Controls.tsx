@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowPointer, faPen, faFillDrip } from "@fortawesome/free-solid-svg-icons";
-import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
+import { IconDefinition, faArrowPointer, faPen, faFillDrip, faEyeDropper } from "@fortawesome/free-solid-svg-icons";
 import { ctrls, Env } from "./Utils";
 
 const controlIcons: IconDefinition[] = [
   faArrowPointer,
   faPen,
+  faEyeDropper,
   faFillDrip,
 ]
 

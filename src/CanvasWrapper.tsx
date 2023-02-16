@@ -104,6 +104,10 @@ export default function CanvasWrapper(
         if (moveOutside) return;
         cvs?.dispatchEvent(new CustomEvent('setcodel', { detail: { x: x, y: y } }));
         break;
+      case 'pick':
+        if(moveOutside)return;
+        cvs?.dispatchEvent(new CustomEvent('pickcolor', {detail: {x: x, y: y}}));
+        break;
       case 'fill':
         if (moveOutside) return;
         cvs?.dispatchEvent(new CustomEvent('fillcodel', { detail: { x: x, y: y } }));

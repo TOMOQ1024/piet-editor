@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Colors, Env, Operations } from './Utils';
 
 export default function ColorPallet(
@@ -6,6 +7,14 @@ export default function ColorPallet(
     setEnv: (f:(e:Env)=>Env)=>void;
   }
 ) {
+  useEffect(()=>{
+    let i = Colors.indexOf(env.fillColor0);
+    if(0<=i){
+      let rd = document.getElementById(`pallet_${i}`) as HTMLInputElement;
+      rd.checked = true;
+    }
+  }, [env]);
+
   function HandleRadioLClick(i: number) {
     setEnv(e=>({...e, fillColor0:Colors[i]}));
   }

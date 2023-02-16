@@ -33,6 +33,7 @@ export interface Size {
 export const ctrls = [
   'move',
   'draw',
+  'pick',
   'fill',
 ] as const;
 export type Ctrl = typeof ctrls[number];

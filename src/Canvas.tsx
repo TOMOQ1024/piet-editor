@@ -18,9 +18,11 @@ export default function Canvas(
     const cvs = document.getElementById("canvas") as HTMLCanvasElement;
     cvs.addEventListener('setcodel', SetCodel);
     cvs.addEventListener('fillcodel', FillCodel);
+    cvs.addEventListener('pickcolor', PickColor);
     return () => {
       cvs.removeEventListener('setcodel', SetCodel);
       cvs.removeEventListener('fillcodel', FillCodel);
+      cvs.removeEventListener('pickcolor', PickColor);
     }
   }, [env, setEnv]);
 
@@ -31,12 +33,13 @@ export default function Canvas(
     const x = Math.floor((e as CustomEvent).detail.x / codelScale);
     const y = Math.floor((e as CustomEvent).detail.y / codelScale);
     if (!isInCanvas(env.size, x, y)) return;
-    setEnv(e => {
-      e.code[y][x] = e.fillColor0;
-      return Object.assign({}, e);
+    setEnv(ev => {
+      ev.code[y][x] = ev.fillColor0;
+      return Object.assign({}, ev);
     })
     RenderCodel(ctx, { x: x, y: y });
   }
+
   function FillCodel(e: Event){
     const pos: Point = {
       x: Math.floor((e as CustomEvent).detail.x / codelScale),
@@ -44,13 +47,26 @@ export default function Canvas(
     };
     if (!isInCanvas(env.size, pos.x, pos.y)) return;
     const block = getColorBlock(pos, env.size, env.code, false);
-    setEnv(e => {
+    setEnv(ev => {
       block.forEach(b=>{
-        e.code[b.y][b.x] = e.fillColor0;
+        ev.code[b.y][b.x] = ev.fillColor0;
       })
-      return Object.assign({}, e);
+      return Object.assign({}, ev);
     })
     RenderCanvas();
+  }
+
+  function PickColor(e: Event){
+    const pos: Point = {
+      x: Math.floor((e as CustomEvent).detail.x / codelScale),
+      y: Math.floor((e as CustomEvent).detail.y / codelScale),
+    };
+    if (!isInCanvas(env.size, pos.x, pos.y)) return;
+    
+    setEnv(ev => {
+      console.log(ev.code[pos.y][pos.x]);
+      return {...ev, fillColor0: ev.code[pos.y][pos.x]};
+    });
   }
 
   function RenderCanvas() {
