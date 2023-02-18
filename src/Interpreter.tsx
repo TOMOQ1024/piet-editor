@@ -1,4 +1,5 @@
 import DebugButton from './DebugButton';
+import { ClearHistory, PushHistory } from './StackHistory';
 import { Colors, Env, isInCanvas, Operations, Point, Size } from './Utils';
 
 interface Buttons {
@@ -19,6 +20,7 @@ export default function Interpreter(
   }
 
   function reset(): Env{
+    ClearHistory();
     return {
       ...env,
       crnt: { x: 0, y: 0 },
@@ -379,5 +381,6 @@ function updateStack(e: Env): Env{
       break;
   }
   console.log(e.stack);
+  PushHistory(e.next, Operations[op], e.stack);
   return e;
 }

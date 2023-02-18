@@ -4,6 +4,7 @@ import CanvasWrapper from './CanvasWrapper';
 import Interpreter from './Interpreter';
 import { Env } from './Utils';
 import { Input, Output } from './IO';
+import { StackHistory } from './StackHistory';
 
 
 
@@ -42,7 +43,10 @@ export default function Editor(
             />
           </div>
         </div>
-        {/* <img src="../logo512.png" alt="temp" /> */}
+        <StackHistory
+        env={env}
+        setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
+        />
       </div>
     </div>
   );

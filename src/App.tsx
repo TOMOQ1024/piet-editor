@@ -4,8 +4,8 @@ import Export from "./Export";
 import Import from "./Import";
 import SideMenu from "./SideMenu";
 import './App.scss';
-import { Display, Env, env_init, Size } from "./Utils";
-import { Decode, Encode, UpdateURL } from "./Compressor";
+import { Display, Env } from "./Utils";
+import { UpdateURL } from "./Compressor";
 
 export default function App(
   {env0}: {

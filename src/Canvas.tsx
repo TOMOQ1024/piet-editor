@@ -64,7 +64,6 @@ export default function Canvas(
     if (!isInCanvas(env.size, pos.x, pos.y)) return;
     
     setEnv(ev => {
-      console.log(ev.code[pos.y][pos.x]);
       return {...ev, fillColor0: ev.code[pos.y][pos.x]};
     });
   }

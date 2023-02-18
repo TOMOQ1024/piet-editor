@@ -42,7 +42,7 @@
       }
     }
     .wrapper-main {
-      white-space: nowrap;
+      display: flex;
       * {
         vertical-align: top;
       }
@@ -137,6 +137,23 @@
           textarea {
             width: 100%;
             resize: vertical;
+          }
+        }
+      }
+      #StackHistory {
+        display: inline-block;
+        width: 300px;
+        height: 600px;
+        margin: 0 3px;
+        padding: 5px;
+        border: 2px solid black;
+        font-size: 5px;
+        line-height: 7px;
+        overflow: scroll;
+        td {
+          text-align: right;
+          &.sh-op, &.sh-pos{
+            text-align: left;
           }
         }
       }
