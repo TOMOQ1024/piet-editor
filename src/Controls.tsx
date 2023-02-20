@@ -1,38 +1,42 @@
 import { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition, faArrowPointer, faPen, faFillDrip, faEyeDropper } from "@fortawesome/free-solid-svg-icons";
+import {
+  IconDefinition,
+  faArrowPointer, faPen, faFillDrip, faEyeDropper,
+  faRotateLeft, faRotateRight, faTrash
+} from "@fortawesome/free-solid-svg-icons";
 import { ctrls, Env } from "./Utils";
 
-const controlIcons: IconDefinition[] = [
-  faArrowPointer,
-  faPen,
-  faEyeDropper,
-  faFillDrip,
-]
+interface ControlButton {
+  icon: IconDefinition;
+  type: React.HTMLInputTypeAttribute;
+  onclick: Function;
+};
+
 
 function Control(
-  {icon, type, tag, selectedTag}: {
-    icon: IconDefinition,
-    type: React.HTMLInputTypeAttribute,
+  {cbn, tag, selectedTag}: {
+    cbn: ControlButton,
     tag: number,
     selectedTag: number,
   }) {
   return (
     <div style={{ display: "inline-block" }}>
       <input
-        id={`ctrl-rd-${tag}`}
-        className="control-radio"
-        type={type}
+        id={`ctrl-btn-${tag}`}
+        className={`control-input control-${cbn.type}`}
+        type={cbn.type}
         name="controls"
         value={tag}
         style={{ display: "none" }}
         defaultChecked={tag === selectedTag}
       />
-      <label htmlFor={`ctrl-rd-${tag}`}>
+      <label htmlFor={`ctrl-btn-${tag}`}>
         <FontAwesomeIcon
           id={`control_${tag}`}
           className="control"
-          icon={icon}
+          icon={cbn.icon}
+          onClick={()=>cbn.onclick()}
         />
       </label>
     </div>
@@ -45,41 +49,37 @@ export default function Controls(
     setEnv: (f: (e: Env) => Env) => void;
   }
 ) {
-  useEffect(()=>{
-    controlIcons.forEach((v, i)=>{
-      const c = document.getElementById(`control_${i}`);
-      if(c !== null){
-        c.addEventListener('click', OnControlClicked);
-        return ()=>{
-          c.removeEventListener('click', OnControlClicked);
-        }
-      }
-    });
-  });
+  const buttons: ControlButton[] = [
+    { icon: faArrowPointer, type: 'radio', onclick:()=>{
+      setEnv(e=>({...e, ctrl: ctrls[0]}));
+    } },
+    { icon: faPen, type: 'radio', onclick:()=>{
+      setEnv(e=>({...e, ctrl: ctrls[1]}));
+    } },
+    { icon: faEyeDropper, type: 'radio', onclick:()=>{
+      setEnv(e=>({...e, ctrl: ctrls[2]}));
+    } },
+    { icon: faFillDrip, type: 'radio', onclick:()=>{
+      setEnv(e=>({...e, ctrl: ctrls[3]}));
+    } },
+    { icon: faRotateLeft, type: 'button', onclick:()=>{
+      console.log('undo');
+    } },
+    { icon: faRotateRight, type: 'button', onclick:()=>{
+      console.log('redo');
+    } },
+    { icon: faTrash, type: 'button', onclick:()=>{
+      console.log('clear');
+    } },
+  ];
 
-  function OnControlClicked(e:MouseEvent) {
-    if (e.target === null) return;
-    const i = Number((e.target as HTMLDivElement).id.replace(/[^\d]/g,''));
-    switch(i) {
-      case 0:
-      case 1:
-      case 2:
-        setEnv(e=>({...e, ctrl: ctrls[i]}));
-        break;
-      case 3:
-        // import
-        console.log('import');
-        break;
-    }
-  }
 
   return (
-    <div id='Controls'>{controlIcons.map((v, i) =>
+    <div id='Controls'>{buttons.map((v, i) =>
       <Control
         key={i}
-        type={i<3 ? 'radio' : 'checkbox'}
+        cbn={v}
         tag={i}
-        icon={v}
         selectedTag={ctrls.indexOf(env.ctrl)}
       />
     )}</div>
