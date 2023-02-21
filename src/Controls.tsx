@@ -69,7 +69,7 @@ export default function Controls(
       console.log('redo');
     } },
     { icon: faTrash, type: 'button', onclick:()=>{
-      console.log('clear');
+      setEnv(e=>({...e,code: e.code.map(v=>v.map(e=>'white'))}));
     } },
   ];
 
