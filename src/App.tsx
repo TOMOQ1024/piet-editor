@@ -24,7 +24,7 @@ export default function App(
     return () => {
       clearInterval(saver);
     }
-  }, []);
+  }, [env.size]);
 
   return (
     <div id='App'>
