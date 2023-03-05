@@ -349,7 +349,7 @@ function updateStack(e: Env): Env{
         n = (n%depth + depth) % depth;
         for(let i=0; i<n; i++){
           p = e.stack.pop()!;
-          e.stack.splice(e.stack.length-depth,0,p);
+          e.stack.splice(e.stack.length-depth+1,0,p);
         }
       }
       break;
