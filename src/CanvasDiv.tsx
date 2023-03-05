@@ -10,7 +10,11 @@ export default function CanvasDiv(
   }
 ){
   return (
-    <div id='canvasdiv' style={style}>
+    <div id='canvasdiv' style={{
+      ...style,
+      width: env.size.w * 40 + 1,
+      height: env.size.h * 40 + 1,
+    }}>
       <Canvas
       env={env}
       setEnv={(f:(e:Env)=>Env)=>setEnv(f)}

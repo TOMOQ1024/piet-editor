@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   IconDefinition,
   faArrowPointer, faPen, faFillDrip, faEyeDropper,
-  faRotateLeft, faRotateRight, faTrash
+  faMaximize, faRotateLeft, faRotateRight, faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import { ctrls, Env } from "./Utils";
 
@@ -61,6 +61,31 @@ export default function Controls(
     } },
     { icon: faFillDrip, type: 'radio', onclick:()=>{
       setEnv(e=>({...e, ctrl: ctrls[3]}));
+    } },
+    { icon: faMaximize, type: 'button', onclick:()=>{
+      const w = parseInt(prompt("新しい横幅") || '0');
+      const h = parseInt(prompt("新しい縦幅") || '0');
+      setEnv(e=>{
+        let newCode: string[][] = [];
+        
+        for(let y=0; y<h; y++){
+          newCode.push([]);
+          for(let x=0; x<w; x++){
+            if(x < e.size.w && y < e.size.h){
+              newCode[y].push(e.code[y][x]);
+            }
+            else{
+              newCode[y].push('#ffffff');
+            }
+          }
+        }
+
+        return {
+          ...e,
+          size: {w:w, h:h},
+          code: newCode
+        };
+      })
     } },
     { icon: faRotateLeft, type: 'button', onclick:()=>{
       console.log('undo');
