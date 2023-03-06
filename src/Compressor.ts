@@ -99,18 +99,22 @@ const stringify = (targetObject: {[key:string]:string}) => {
   }, "")
 }
 
-const updateQueryParams = (newKey:string, newValue:string) => {
+const updateQueryParams = (newKey:string, newValue:string, replace:boolean) => {
   const searchParams = new URLSearchParams(window.location.search);
   const nextQueryParams:{[key:string]:string} = {};
   searchParams.forEach((value, key) => {
     nextQueryParams[key] = value;
   });
   nextQueryParams[newKey] = newValue;
-  window.history.replaceState(null, document.title, `?${stringify(nextQueryParams)}`);
+  if(replace){
+    window.history.replaceState(null, document.title, `?${stringify(nextQueryParams)}`);
+  } else {
+    window.history.pushState(null, document.title, `?${stringify(nextQueryParams)}`);
+  }
 }
 
-export function UpdateURL(e: Env) {
-  updateQueryParams('content', Encode(e));
+export function UpdateURL(e: Env, replace=true) {
+  updateQueryParams('content', Encode(e), replace);
   // console.log('Saved automatically!');
 }
 

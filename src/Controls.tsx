@@ -3,9 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   IconDefinition,
   faArrowPointer, faPen, faFillDrip, faEyeDropper,
-  faMaximize, faRotateLeft, faRotateRight, faTrash
+  faFloppyDisk, faMaximize, faRotateLeft, faRotateRight, faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { ctrls, Env } from "./Utils";
+import { UpdateURL } from "./Compressor";
 
 interface ControlButton {
   icon: IconDefinition;
@@ -62,12 +63,15 @@ export default function Controls(
     { icon: faFillDrip, type: 'radio', onclick:()=>{
       setEnv(e=>({...e, ctrl: ctrls[3]}));
     } },
+    { icon: faFloppyDisk, type: 'button', onclick:()=>{
+      UpdateURL(env, false);
+    } },
     { icon: faMaximize, type: 'button', onclick:()=>{
       const w = parseInt(prompt("新しい横幅") || '0');
       const h = parseInt(prompt("新しい縦幅") || '0');
       setEnv(e=>{
         let newCode: string[][] = [];
-        
+
         for(let y=0; y<h; y++){
           newCode.push([]);
           for(let x=0; x<w; x++){
