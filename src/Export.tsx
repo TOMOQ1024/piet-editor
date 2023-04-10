@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import { Colors, Env } from "./Utils";
 
 export default function Export(
-  {env}: {
-    env: Env
+  {env, display}: {
+    env: Env;
+    display: boolean
   }
 ) {
   const [codelSize, setCodelSize] = useState(10);
   const [messages, setMessages] = useState({url:'',img:''});
 
   useEffect(()=>{
+    if(!display)return;
     const cvs = document.getElementById('canvas-export') as HTMLCanvasElement;
     if(cvs){
       cvs.width = codelSize * env.size.w;
@@ -23,7 +25,7 @@ export default function Export(
         }
       }
     }
-  }, [env.code, env.size, codelSize]);
+  }, [env.code, env.size, codelSize, display]);
 
   // クリップボードへコピー（コピーの処理）
   function copyURLToClipboard () {
@@ -98,7 +100,7 @@ export default function Export(
   }
 
   return (
-    <div id='Export'>
+    <div id='Export' className={display?'contents-visible':'contents-hidden'}>
       <div id='wrapper-url'>{window.location.href}</div>
       <div>
         <input type='button' value='COPY URL' onClick={

@@ -32,25 +32,15 @@ export default function App(
       dis={dis}
       setDis={(f:(e:Display)=>Display)=>setDis(f)}
       />
-      {(()=>{
-        switch(dis){
-          case 'editor':
-            return (
-              <Editor
-              env={env}
-              setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
-              />
-            );
-          case 'export':
-            return (
-              <Export env={env}/>
-            );
-          case 'import':
-            return (
-              <Import/>
-            );
-        }
-      })()}
+      <div id='Contents'>
+        <Editor
+        env={env}
+        setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
+        display={dis==='editor'}
+        />
+        <Import display={dis==='import'}/>
+        <Export env={env} display={dis==='export'}/>
+      </div>
     </div>
   )
 }

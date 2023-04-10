@@ -9,13 +9,14 @@ import { StackHistory } from './StackHistory';
 
 
 export default function Editor(
-  { env, setEnv }: {
+  { env, setEnv, display }: {
     env: Env;
     setEnv: (f: (e: Env) => Env) => void;
+    display: boolean
   }
 ) {
   return (
-    <div id="Editor">
+    <div id="Editor" className={display?'contents-visible':'contents-hidden'}>
       <Controls
       env={env}
       setEnv={(f:(e:Env)=>Env)=>setEnv(f)}

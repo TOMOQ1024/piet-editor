@@ -1,6 +1,10 @@
-export default function Import() {
+export default function Import(
+  { display } : {
+    display: boolean
+  }
+) {
   return (
-    <div>
+    <div className={display?'contents-visible':'contents-hidden'}>
       <input type="file" />
     </div>
   )
