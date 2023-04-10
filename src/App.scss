@@ -173,6 +173,10 @@
     background-color: #eee;
   }
   #Export {
+    #wrapper-url {
+      margin: 10px 10px;
+      //overflow-wrap: anywhere;
+    }
     #canvas-export {
       margin: 20px;
     }
