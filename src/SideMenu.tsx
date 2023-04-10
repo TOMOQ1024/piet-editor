@@ -1,12 +1,12 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faFileArrowUp, faPenToSquare, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faFileArrowUp, faPenToSquare, faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Display, displays } from "./Utils";
 
 const icons = [
   faPenToSquare,
   faFileArrowUp,
-  faDownload,
+  faShareFromSquare,
 ]
 
 function MenuItem(

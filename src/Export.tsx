@@ -59,8 +59,8 @@ export default function Export(
           () => {
             setMessages(m=>({...m, img:`画像をコピーしました (${(new Date()).toLocaleString()})`}));
           },
-          () => {
-            setMessages(m=>({...m, img:`コピーに失敗しました (${(new Date()).toLocaleString()})`}));
+          (reason) => {
+            setMessages(m=>({...m, img:`コピーに失敗しました: {${reason}} (${(new Date()).toLocaleString()})`}));
           }
         )
       }
