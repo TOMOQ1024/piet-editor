@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/piet-editor/static/css/main.7a81ecec.css",
-    "main.js": "/piet-editor/static/js/main.acbf400f.js",
+    "main.css": "/piet-editor/static/css/main.c5c26525.css",
+    "main.js": "/piet-editor/static/js/main.27302652.js",
     "static/js/787.9bef1ce6.chunk.js": "/piet-editor/static/js/787.9bef1ce6.chunk.js",
     "index.html": "/piet-editor/index.html",
-    "main.7a81ecec.css.map": "/piet-editor/static/css/main.7a81ecec.css.map",
-    "main.acbf400f.js.map": "/piet-editor/static/js/main.acbf400f.js.map",
+    "main.c5c26525.css.map": "/piet-editor/static/css/main.c5c26525.css.map",
+    "main.27302652.js.map": "/piet-editor/static/js/main.27302652.js.map",
     "787.9bef1ce6.chunk.js.map": "/piet-editor/static/js/787.9bef1ce6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.7a81ecec.css",
-    "static/js/main.acbf400f.js"
+    "static/css/main.c5c26525.css",
+    "static/js/main.27302652.js"
   ]
 }
