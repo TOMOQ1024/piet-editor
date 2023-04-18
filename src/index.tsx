@@ -4,6 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import App from './App';
 import { LoadURL } from './Compressor';
+import { CopyCode } from './Utils';
 
 let e = LoadURL();
 
@@ -19,6 +20,8 @@ if(!e.size.w){
   e.size = size;
   e.code = code;
 }
+
+e.codeHistory = [CopyCode(e.code)];
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(

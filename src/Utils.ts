@@ -50,6 +50,8 @@ export interface Env {
   next: Point,
   size: Size,
   code: string[][],
+  codeHistory: string[][][],
+  currentCodeAt: number,
   dp: number,
   cc: number,
   block: Point[],
@@ -68,6 +70,8 @@ export const env_init: Env = {
   next: {x:-1,y:-1},
   size: {w: 0, h: 0},
   code: [],
+  codeHistory: [],
+  currentCodeAt: 0,
   dp: 0,
   cc: 0,
   block: [],
@@ -92,4 +96,31 @@ export function isInCanvas(
 export function useForceUpdate() {
   const [, newState] = useState({});
   return useCallback(() => newState({}), []);
+}
+
+export function IsSameCode(code0:string[][], code1:string[][]){
+  const h = code0.length;
+  if(!h)return code1.length === 0;
+  const w = code0[0].length;
+  if(code1.length !== h)return false;
+  if(code1[0].length !== w)return false;
+  for(let y=0; y<h; y++){
+    for(let x=0; x<w; x++){
+      if(code0[y][x] !== code1[y][x]){
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+export function CopyCode(code:string[][]){
+  let rtnCode: string[][] = [];
+  for(let y=0; y<code.length; y++){
+    rtnCode.push([]);
+    for(let x=0; x<code[0].length; x++){
+      rtnCode[y].push(code[y][x]);
+    }
+  }
+  return rtnCode;
 }

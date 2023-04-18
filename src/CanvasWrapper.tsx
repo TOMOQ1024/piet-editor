@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import CanvasDiv from './CanvasDiv';
-import { Env, isInCanvas, Point, Size } from './Utils';
+import { CopyCode, Env, isInCanvas, IsSameCode, Point, Size } from './Utils';
 
 // メインのキャンバスの移動やサイズ制御を行う
 export default function CanvasWrapper(
@@ -13,6 +13,7 @@ export default function CanvasWrapper(
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState<Point>({ x: 0, y: 0 });
   const [translateOnMouseDown, setTranslateOnMouseDown] = useState<Point>({ x: 0, y: 0 });
+  const [drawing, setDrawing] = useState(false);
 
   useEffect(() => {
     // 各イベントの追加
@@ -20,6 +21,7 @@ export default function CanvasWrapper(
     document.addEventListener('wheel', HandleWheel, { passive: false });
     document.addEventListener('mousedown', HandleMouseDown, { passive: false });
     document.addEventListener('mousemove', HandleMouseMove, { passive: false });
+    document.addEventListener('mouseup', HandleMouseUp, { passive: false });
     document.addEventListener('contextmenu', HandleContextMenu, { passive: false });
     if(self){
       self.addEventListener('dragover', HandleDragOver, { passive: false });
@@ -29,6 +31,7 @@ export default function CanvasWrapper(
       document.removeEventListener('wheel', HandleWheel);
       document.removeEventListener('mousedown', HandleMouseDown);
       document.removeEventListener('mousemove', HandleMouseMove);
+      document.removeEventListener('mouseup', HandleMouseUp);
       document.removeEventListener('contextmenu', HandleContextMenu);
       if(self){
         self.removeEventListener('dragover', HandleDragOver);
@@ -58,6 +61,7 @@ export default function CanvasWrapper(
       y: translate.y
     }));
     if (!isInCanvas(s, X, Y)) return;
+    setDrawing(true);
     if (env.ctrl !== 'move') {
       HandleMouseMove(e);
     }
@@ -113,6 +117,26 @@ export default function CanvasWrapper(
         cvs?.dispatchEvent(new CustomEvent('fillcodel', { detail: { x: x, y: y } }));
         break;
     }
+  }
+
+  function HandleMouseUp(e: MouseEvent){
+    if(env.ctrl === 'draw'){
+      console.log('history');
+      console.log(env.codeHistory);
+      console.log(drawing);
+      if(drawing && !IsSameCode(env.code, env.codeHistory[env.codeHistory.length-1])){
+        console.log('dif');
+        setEnv(e=>{
+          const newHistory = [...e.codeHistory.slice(0,e.currentCodeAt+1),CopyCode(e.code)];
+          return ({
+            ...e,
+            codeHistory: newHistory,
+            currentCodeAt: e.currentCodeAt+1
+          })
+        });
+      }
+    }
+    setDrawing(false);
   }
 
   function HandleWheel(e: WheelEvent) {
