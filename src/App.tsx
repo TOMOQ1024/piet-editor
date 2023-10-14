@@ -38,7 +38,7 @@ export default function App(
         setEnv={(f:(e:Env)=>Env)=>setEnv(f)}
         display={dis==='editor'}
         />
-        <Import display={dis==='import'}/>
+        <Import env={env} setEnv={(f:(e:Env)=>Env)=>setEnv(f)} display={dis==='import'}/>
         <Export env={env} display={dis==='export'}/>
       </div>
     </div>

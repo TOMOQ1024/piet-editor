@@ -191,7 +191,10 @@
       }
     }
     #Import {
-      background-color: #eee;
+      // background-color: #eee;
+      #input-preview {
+        max-width: 50vw;
+      }
     }
     #Export {
       #wrapper-url {
