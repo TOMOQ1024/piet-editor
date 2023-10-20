@@ -93,9 +93,24 @@ export default function Controls(
     } },
     { icon: faRotateLeft, type: 'button', onclick:()=>{
       console.log('undo');
+      console.log(env.currentCodeAt);
+      if(0 < env.currentCodeAt){
+        setEnv(e=>({
+          ...e,
+          code: e.codeHistory[e.currentCodeAt-1],
+          currentCodeAt: e.currentCodeAt-1
+        }));
+      }
     } },
     { icon: faRotateRight, type: 'button', onclick:()=>{
       console.log('redo');
+      if(env.currentCodeAt+1 < env.codeHistory.length){
+        setEnv(e=>({
+          ...e,
+          code: e.codeHistory[e.currentCodeAt+1],
+          currentCodeAt: e.currentCodeAt+1
+        }));
+      }
     } },
     { icon: faTrash, type: 'button', onclick:()=>{
       setEnv(e=>({...e,code: e.code.map(v=>v.map(e=>'#ffffff'))}));
